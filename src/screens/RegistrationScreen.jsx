@@ -1,23 +1,36 @@
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import {
+	KeyboardAvoidingView,
+	Platform,
+	StyleSheet,
+	Text,
+	View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, CustomButton, RegistrationForm } from '../components';
-import { useState } from 'react';
 
 export const RegistrationScreen = () => {
 	const [userPhoto, setUserPhoto] = useState(null);
 	return (
 		<SafeAreaView style={styles.container}>
-			<View style={styles.imgWrap}>
-				<CustomButton
-					iconName='pluscircleo'
-					onPress={() => {}}
-					iconSize={25}
-					styleBtn={styles.iconBtn}
-					iconStyle={userPhoto ?? styles.iconActive}
-				/>
-			</View>
-			<Title text='Реєстрація' />
-			<RegistrationForm />
+			<KeyboardAvoidingView
+				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+				keyboardVerticalOffset={0}
+				style={styles.wrapKeyboard}
+			>
+				<View style={styles.imgWrap}>
+					<CustomButton
+						iconName='pluscircleo'
+						onPress={() => {}}
+						iconSize={25}
+						styleBtn={styles.iconBtn}
+						iconStyle={userPhoto ?? styles.iconActive}
+					/>
+				</View>
+				<Title text='Реєстрація' />
+				<RegistrationForm />
+				<Text style={styles.informText}>Вже є акаунт? Увійти</Text>
+			</KeyboardAvoidingView>
 		</SafeAreaView>
 	);
 };
@@ -26,10 +39,15 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 0.66,
 		alignItems: 'center',
-		paddingTop: 60,
 		backgroundColor: '#fff',
 		borderTopLeftRadius: 25,
 		borderTopRightRadius: 25,
+	},
+	wrapKeyboard: {
+		flex: 1,
+		alignItems: 'center',
+		width: '100%',
+		paddingTop: 60,
 	},
 	imgWrap: {
 		width: 120,
@@ -47,5 +65,10 @@ const styles = StyleSheet.create({
 	},
 	iconActive: {
 		color: '#FF6C00',
+	},
+	informText: {
+		marginTop: 16,
+		fontWeight: 400,
+		color: '#1B4371',
 	},
 });

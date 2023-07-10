@@ -3,7 +3,7 @@ import { ImageBackground, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 
 const image = require('./assets/photo-bg.png');
-import { RegistrationScreen } from './src/screens';
+import { RegistrationScreen, LoginScreen } from './src/screens';
 
 export default function App() {
 	const [fontsLoaded] = useFonts({
@@ -16,7 +16,8 @@ export default function App() {
 
 	return (
 		<ImageBackground source={image} resizeMode='cover' style={styles.imageBg}>
-			<RegistrationScreen />
+			{/* <RegistrationScreen /> */}
+			<LoginScreen />
 			<StatusBar style='auto' />
 		</ImageBackground>
 	);
