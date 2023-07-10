@@ -26,5 +26,6 @@ const styles = StyleSheet.create({
 	imageBg: {
 		flex: 1,
 		justifyContent: 'flex-end',
+		fontFamily: 'Roboto',
 	},
 });

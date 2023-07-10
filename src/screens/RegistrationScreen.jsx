@@ -12,7 +12,7 @@ export const RegistrationScreen = () => {
 					iconName='pluscircleo'
 					onPress={() => {}}
 					iconSize={25}
-					iconBtn={styles.iconBtn}
+					styleBtn={styles.iconBtn}
 					iconStyle={userPhoto ?? styles.iconActive}
 				/>
 			</View>

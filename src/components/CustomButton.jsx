@@ -4,16 +4,15 @@ import { AntDesign } from '@expo/vector-icons';
 export const CustomButton = ({
 	iconName,
 	onPress,
-	iconBtn,
+	styleBtn,
 	title,
+	titleStyle,
 	iconSize,
 	iconStyle,
 }) => {
-	console.log(iconStyle);
-
 	return (
-		<TouchableOpacity onPress={onPress} style={iconBtn}>
-			{title && <Text>{title}</Text>}
+		<TouchableOpacity onPress={onPress} style={[styles.btn, styleBtn]}>
+			{title && <Text style={[styles.btnText, titleStyle]}>{title}</Text>}
 			{iconName && (
 				<AntDesign
 					name={iconName}
@@ -26,6 +25,15 @@ export const CustomButton = ({
 };
 
 const styles = StyleSheet.create({
+	btn: {
+		alignSelf: 'flex-start',
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
+	btnText: {
+		fontSize: 16,
+		fontWeight: '400',
+	},
 	icon: {
 		color: '#BDBDBD',
 	},
