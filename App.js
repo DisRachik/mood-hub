@@ -16,8 +16,8 @@ export default function App() {
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
-      <RegistrationScreen />
-      {/* <LoginScreen /> */}
+      {/* <RegistrationScreen /> */}
+      <LoginScreen />
       <StatusBar style="auto" />
     </ImageBackground>
   );

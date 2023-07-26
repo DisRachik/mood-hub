@@ -1,12 +1,29 @@
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, CustomButton, RegistrationForm } from '../components';
 
 export const RegistrationScreen = () => {
   const [userPhoto, setUserPhoto] = useState(null);
+  const [keyboardOpen, setKeyboardOpen] = useState(true);
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
+      setKeyboardOpen(false);
+    });
+
+    const keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', () => {
+      setKeyboardOpen(true);
+    });
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={0}
@@ -22,8 +39,8 @@ export const RegistrationScreen = () => {
           />
         </View>
         <Title text="Реєстрація" />
-        <RegistrationForm />
-        <Text style={styles.informText}>Вже є акаунт? Увійти</Text>
+        <RegistrationForm keyboardOpen={keyboardOpen} />
+        {keyboardOpen && <Text style={styles.informText}>Вже є акаунт? Увійти</Text>}
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -36,6 +53,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+  },
+  keyboardActive: {
+    flex: 0,
+    height: 374,
   },
   wrapKeyboard: {
     flex: 1,

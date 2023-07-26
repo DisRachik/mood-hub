@@ -4,7 +4,7 @@ import { baseFormStyles } from './Form.styled';
 import { useState } from 'react';
 import { CustomButton } from '../CustomButton';
 
-export const RegistrationForm = () => {
+export const RegistrationForm = ({ keyboardOpen }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -128,12 +128,14 @@ export const RegistrationForm = () => {
         />
       </View>
 
-      <CustomButton
-        title="Зареєстуватися"
-        onPress={handleSubmit(onSubmit)}
-        styleBtn={styles.formBtn}
-        titleStyle={styles.formBtnText}
-      />
+      {keyboardOpen && (
+        <CustomButton
+          title="Зареєстуватися"
+          onPress={handleSubmit(onSubmit)}
+          styleBtn={styles.formBtn}
+          titleStyle={styles.formBtnText}
+        />
+      )}
     </View>
   );
 };
