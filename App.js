@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { ImageBackground, StyleSheet } from 'react-native';
+import { ImageBackground, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useFonts } from 'expo-font';
 
 const image = require('./assets/photo-bg.png');
@@ -15,11 +15,13 @@ export default function App() {
   }
 
   return (
-    <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
-      {/* <RegistrationScreen /> */}
-      <LoginScreen />
-      <StatusBar style="auto" />
-    </ImageBackground>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
+        <RegistrationScreen />
+        {/* <LoginScreen /> */}
+        <StatusBar style="auto" />
+      </ImageBackground>
+    </TouchableWithoutFeedback>
   );
 }
 
