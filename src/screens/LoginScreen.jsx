@@ -1,4 +1,11 @@
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, Keyboard } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, LoginForm } from '../components';
 import { useEffect, useState } from 'react';
@@ -22,17 +29,19 @@ export const LoginScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
-        style={styles.wrapKeyboard}
-      >
-        <Title text="Увійти" />
-        <LoginForm keyboardOpen={keyboardOpen} />
-        {keyboardOpen && <Text style={styles.informText}>Немає акаунту? Зареєструватися</Text>}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+          style={styles.wrapKeyboard}
+        >
+          <Title text="Увійти" />
+          <LoginForm keyboardOpen={keyboardOpen} />
+          {keyboardOpen && <Text style={styles.informText}>Немає акаунту? Зареєструватися</Text>}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 

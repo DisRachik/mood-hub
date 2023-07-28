@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, CustomButton, RegistrationForm } from '../components';
 
@@ -23,26 +31,31 @@ export const RegistrationScreen = () => {
   }, []);
 
   return (
-    <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={0}
-        style={styles.wrapKeyboard}
-      >
-        <View style={styles.imgWrap}>
-          <CustomButton
-            iconName="pluscircleo"
-            onPress={() => {}}
-            iconSize={25}
-            styleBtn={styles.iconBtn}
-            iconStyle={userPhoto ?? styles.iconActive}
-          />
-        </View>
-        <Title text="Реєстрація" />
-        <RegistrationForm keyboardOpen={keyboardOpen} />
-        {keyboardOpen && <Text style={styles.informText}>Вже є акаунт? Увійти</Text>}
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={0}
+          style={styles.wrapKeyboard}
+        >
+          <View style={styles.imgWrap}>
+            <CustomButton
+              iconName="pluscircleo"
+              onPress={() => {
+                Keyboard.dismiss();
+              }}
+              iconSize={25}
+              styleBtn={styles.iconBtn}
+              iconStyle={userPhoto ?? styles.iconActive}
+            />
+          </View>
+          <Title text="Реєстрація" />
+
+          <RegistrationForm keyboardOpen={keyboardOpen} />
+          {keyboardOpen && <Text style={styles.informText}>Вже є акаунт? Увійти</Text>}
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 

@@ -1,6 +1,5 @@
 import { useForm, Controller } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { baseFormStyles } from './Form.styled';
 import { useState } from 'react';
 import { CustomButton } from '../CustomButton';
 
@@ -29,7 +28,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
   };
 
   return (
-    <View style={baseFormStyles.formWrap}>
+    <View style={styles.container}>
       <View>
         <Controller
           control={control}
@@ -46,7 +45,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
               value={value}
               placeholder="Логін"
               placeholderTextColor="#BDBDBD"
-              style={[baseFormStyles.input, activeInput === 'login' && baseFormStyles.inputActive]}
+              style={[styles.input, activeInput === 'login' && styles.inputActive]}
             />
           )}
           name="login"
@@ -55,7 +54,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
           }}
           defaultValue=""
         />
-        {errors.login && <Text style={baseFormStyles.error}>{errors.login.message}</Text>}
+        {errors.login && <Text style={styles.error}>{errors.login.message}</Text>}
       </View>
 
       <View>
@@ -75,7 +74,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
               placeholder="Адреса електронної пошти"
               placeholderTextColor="#BDBDBD"
               autoCapitalize="none"
-              style={[baseFormStyles.input, activeInput === 'email' && baseFormStyles.inputActive]}
+              style={[styles.input, activeInput === 'email' && styles.inputActive]}
             />
           )}
           name="email"
@@ -88,7 +87,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
           }}
           defaultValue=""
         />
-        {errors.email && <Text style={baseFormStyles.error}>{errors.email.message}</Text>}
+        {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
       </View>
 
       <View>
@@ -108,17 +107,14 @@ export const RegistrationForm = ({ keyboardOpen }) => {
               placeholder="Пароль"
               placeholderTextColor="#BDBDBD"
               secureTextEntry={!showPassword}
-              style={[
-                baseFormStyles.input,
-                activeInput === 'password' && baseFormStyles.inputActive,
-              ]}
+              style={[styles.input, activeInput === 'password' && styles.inputActive]}
             />
           )}
           name="password"
           rules={{ required: "Це поле є обов'язковим" }}
           defaultValue=""
         />
-        {errors.password && <Text style={baseFormStyles.error}>{errors.password.message}</Text>}
+        {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}
 
         <CustomButton
           title={!showPassword ? 'Показати' : 'Приховати'}
@@ -141,6 +137,39 @@ export const RegistrationForm = ({ keyboardOpen }) => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    width: '100%',
+    marginTop: 33,
+    paddingRight: 16,
+    paddingLeft: 16,
+    gap: 16,
+  },
+  input: {
+    width: '100%',
+    height: 50,
+    padding: 15,
+    backgroundColor: '#f6f6f6',
+    borderWidth: 0.5,
+    borderColor: '#E8E8E8',
+    borderStyle: 'solid',
+    borderRadius: 8,
+
+    color: '#212121',
+    fontSize: 16,
+    fontWeight: '400',
+  },
+  inputActive: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#FF6C00',
+    color: '#212121',
+  },
+  error: {
+    position: 'absolute',
+    left: 16,
+    bottom: -13,
+    color: 'red',
+    fontSize: 12,
+  },
   passwordBtn: {
     height: '100%',
     position: 'absolute',
