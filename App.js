@@ -1,13 +1,19 @@
+import { NavigationContainer } from '@react-navigation/native';
+import 'react-native-gesture-handler';
+import { createStackNavigator } from '@react-navigation/stack';
+
 import { StatusBar } from 'expo-status-bar';
-import { ImageBackground, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useFonts } from 'expo-font';
 
-const image = require('./assets/photo-bg.png');
 import { RegistrationScreen, LoginScreen } from './src/screens';
+
+const MainStack = createStackNavigator();
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Roboto: require('./assets/fonts/Roboto-Medium.ttf'),
+    'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
+    'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
+    'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
   });
 
   if (!fontsLoaded) {
@@ -15,20 +21,16 @@ export default function App() {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
-        <RegistrationScreen />
-        {/* <LoginScreen /> */}
-        <StatusBar style="auto" />
-      </ImageBackground>
-    </TouchableWithoutFeedback>
+    <NavigationContainer>
+      <MainStack.Navigator>
+        <MainStack.Screen
+          name="Registration"
+          component={RegistrationScreen}
+          options={{ headerShown: false }}
+        />
+        <MainStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+      </MainStack.Navigator>
+      <StatusBar style="auto" />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  imageBg: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    fontFamily: 'Roboto',
-  },
-});
