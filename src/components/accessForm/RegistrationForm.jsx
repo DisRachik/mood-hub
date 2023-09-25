@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import { CustomButton } from '../CustomButton';
 
-export const RegistrationForm = ({ keyboardOpen }) => {
+export const RegistrationForm = ({ keyboardOpen, onClick }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,6 +24,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
 
   const onSubmit = (data) => {
     console.log(data);
+    onClick();
     reset();
   };
 

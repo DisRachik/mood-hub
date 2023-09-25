@@ -1,10 +1,10 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text } from 'react-native';
 
-export const PostsScreen = () => {
+export const ProfileScreen = () => {
   return (
     <SafeAreaView>
-      <Text>CreatePostsScreen</Text>
+      <Text>ProfileScreen</Text>
     </SafeAreaView>
   );
 };

@@ -10,11 +10,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, CustomButton, RegistrationForm, AuthScreenButton } from '../components';
 const image = require('../../assets/photo-bg.png');
 
-export const RegistrationScreen = () => {
+export const RegistrationScreen = ({ route }) => {
   const [userPhoto, setUserPhoto] = useState(null);
   const [keyboardOpen, setKeyboardOpen] = useState(true);
   const navigation = useNavigation();
@@ -57,7 +56,7 @@ export const RegistrationScreen = () => {
               </View>
               <Title text="Реєстрація" />
 
-              <RegistrationForm keyboardOpen={keyboardOpen} />
+              <RegistrationForm keyboardOpen={keyboardOpen} onClick={route.params.onAuth} />
               {keyboardOpen && (
                 <AuthScreenButton
                   text="Вже є акаунт? "
@@ -102,8 +101,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -60,
 
-    // backgroundColor: '#f6f6f6',
-    backgroundColor: 'red',
+    backgroundColor: '#f6f6f6',
     borderRadius: 16,
   },
   iconBtn: {

@@ -3,7 +3,7 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
 import { CustomButton } from '../CustomButton';
 
-export const LoginForm = ({ keyboardOpen }) => {
+export const LoginForm = ({ keyboardOpen, onClick }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -23,6 +23,7 @@ export const LoginForm = ({ keyboardOpen }) => {
 
   const onSubmit = (data) => {
     console.log(data);
+    onClick();
     reset();
   };
 

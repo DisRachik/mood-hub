@@ -10,11 +10,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Title, LoginForm, AuthScreenButton } from '../components';
 const image = require('../../assets/photo-bg.png');
 
-export const LoginScreen = () => {
+export const LoginScreen = ({ route }) => {
   const [keyboardOpen, setKeyboardOpen] = useState(true);
   const navigation = useNavigation();
 
@@ -37,14 +36,14 @@ export const LoginScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
+          <View style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
             <KeyboardAvoidingView
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               keyboardVerticalOffset={0}
               style={styles.wrapKeyboard}
             >
               <Title text="Увійти" />
-              <LoginForm keyboardOpen={keyboardOpen} />
+              <LoginForm keyboardOpen={keyboardOpen} onClick={route.params.onAuth} />
               {keyboardOpen && (
                 <AuthScreenButton
                   text="Немає акаунту? "
@@ -53,7 +52,7 @@ export const LoginScreen = () => {
                 />
               )}
             </KeyboardAvoidingView>
-          </SafeAreaView>
+          </View>
         </TouchableWithoutFeedback>
       </ImageBackground>
     </TouchableWithoutFeedback>

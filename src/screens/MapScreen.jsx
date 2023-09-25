@@ -1,10 +1,10 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, Text } from 'react-native';
 
-export const PostsScreen = () => {
+export const MapScreen = () => {
   return (
     <SafeAreaView>
-      <Text>CreatePostsScreen</Text>
+      <Text>MapScreen</Text>
     </SafeAreaView>
   );
 };
