@@ -1,26 +1,14 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { useState } from 'react';
 import 'react-native-gesture-handler';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
 
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 
-import {
-  RegistrationScreen,
-  LoginScreen,
-  PostsScreen,
-  CommentsScreen,
-  ProfileScreen,
-  MapScreen,
-} from './src/screens';
-import { useState } from 'react';
-
-const AuthStack = createStackNavigator();
-const HomeStack = createBottomTabNavigator();
+import { AuthNavigation, HomeNavigation } from './src/navigation';
 
 export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [isSignedIn, setIsSignedIn] = useState(true);
 
   const [fontsLoaded] = useFonts({
     'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
@@ -32,50 +20,11 @@ export default function App() {
     return null;
   }
 
-  const onAuth = () => setIsSignedIn((prevState) => !prevState);
+  const onAuth = () => setIsSignedIn((isSignedIn) => !isSignedIn);
 
   return (
     <NavigationContainer>
-      {!isSignedIn ? (
-        <AuthStack.Navigator>
-          <AuthStack.Screen
-            name="Registration"
-            component={RegistrationScreen}
-            options={{ headerShown: false }}
-            initialParams={{ onAuth }}
-          />
-          <AuthStack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-            initialParams={{ onAuth }}
-          />
-        </AuthStack.Navigator>
-      ) : (
-        <HomeStack.Navigator>
-          <HomeStack.Screen
-            name="PostsScreen"
-            component={PostsScreen}
-            options={{ headerShown: false }}
-          />
-          <HomeStack.Screen
-            name="CommentsScreen"
-            component={CommentsScreen}
-            options={{ headerShown: false }}
-          />
-          <HomeStack.Screen
-            name="ProfileScreen"
-            component={ProfileScreen}
-            options={{ headerShown: false }}
-          />
-          <HomeStack.Screen
-            name="MapScreen"
-            component={MapScreen}
-            options={{ headerShown: false }}
-          />
-        </HomeStack.Navigator>
-      )}
-
+      {!isSignedIn ? <AuthNavigation /> : <HomeNavigation />}
       <StatusBar style="auto" />
     </NavigationContainer>
   );

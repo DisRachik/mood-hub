@@ -1,9 +1,9 @@
 import { useForm, Controller } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
-import { CustomButton } from '../CustomButton';
+import { CustomButton } from '../buttons/CustomButton';
 
-export const LoginForm = ({ keyboardOpen, onClick }) => {
+export const LoginForm = ({ keyboardOpen }) => {
   const [activeInput, setActiveInput] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -23,7 +23,6 @@ export const LoginForm = ({ keyboardOpen, onClick }) => {
 
   const onSubmit = (data) => {
     console.log(data);
-    onClick();
     reset();
   };
 

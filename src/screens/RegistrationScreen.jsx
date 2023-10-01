@@ -12,8 +12,9 @@ import {
 } from 'react-native';
 import { Title, CustomButton, RegistrationForm, AuthScreenButton } from '../components';
 const image = require('../../assets/photo-bg.png');
+import { AntDesign } from '@expo/vector-icons';
 
-export const RegistrationScreen = ({ route }) => {
+export const RegistrationScreen = () => {
   const [userPhoto, setUserPhoto] = useState(null);
   const [keyboardOpen, setKeyboardOpen] = useState(true);
   const navigation = useNavigation();
@@ -45,18 +46,21 @@ export const RegistrationScreen = ({ route }) => {
             >
               <View style={styles.imgWrap}>
                 <CustomButton
-                  iconName="pluscircleo"
                   onPress={() => {
                     Keyboard.dismiss();
                   }}
-                  iconSize={25}
                   styleBtn={styles.iconBtn}
-                  iconStyle={userPhoto ?? styles.iconActive}
-                />
+                >
+                  <AntDesign
+                    name="pluscircleo"
+                    size={25}
+                    style={userPhoto ? styles.iconActive : styles.icon}
+                  />
+                </CustomButton>
               </View>
               <Title text="Реєстрація" />
 
-              <RegistrationForm keyboardOpen={keyboardOpen} onClick={route.params.onAuth} />
+              <RegistrationForm keyboardOpen={keyboardOpen} />
               {keyboardOpen && (
                 <AuthScreenButton
                   text="Вже є акаунт? "
@@ -110,6 +114,10 @@ const styles = StyleSheet.create({
     transform: [{ translateY: -37.5 }, { translateX: -12.5 }],
   },
   iconActive: {
+    color: '#BDBDBD',
+    transform: [{ rotate: '45deg' }],
+  },
+  icon: {
     color: '#FF6C00',
   },
 });

@@ -13,7 +13,7 @@ import {
 import { Title, LoginForm, AuthScreenButton } from '../components';
 const image = require('../../assets/photo-bg.png');
 
-export const LoginScreen = ({ route }) => {
+export const LoginScreen = () => {
   const [keyboardOpen, setKeyboardOpen] = useState(true);
   const navigation = useNavigation();
 
@@ -43,7 +43,7 @@ export const LoginScreen = ({ route }) => {
               style={styles.wrapKeyboard}
             >
               <Title text="Увійти" />
-              <LoginForm keyboardOpen={keyboardOpen} onClick={route.params.onAuth} />
+              <LoginForm keyboardOpen={keyboardOpen} />
               {keyboardOpen && (
                 <AuthScreenButton
                   text="Немає акаунту? "
