@@ -11,8 +11,8 @@ export default function App() {
   const [isSignedIn, setIsSignedIn] = useState(true);
 
   const [fontsLoaded] = useFonts({
-    'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
     'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
+    'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
     'Roboto-Bold': require('./assets/fonts/Roboto-Bold.ttf'),
   });
 

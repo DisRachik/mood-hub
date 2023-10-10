@@ -4,3 +4,4 @@ export * from './buttons/AuthScreenButton';
 export * from './buttons/LogOutButton';
 export * from './accessForm/RegistrationForm';
 export * from './accessForm/LoginForm';
+export * from './card/Card';
