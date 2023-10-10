@@ -10,6 +10,8 @@ export const headerOptions = {
 
   tabBarShowLabel: false,
   tabBarStyle: {
+    height: 70,
+    paddingBottom: 12,
     borderTopWidth: 0.5,
     borderTopColor: 'rgba(0, 0, 0, 0.30)',
   },

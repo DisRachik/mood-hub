@@ -55,8 +55,6 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
     marginBottom: 1,
     width: '100%',
+    backgroundColor: '#FFFFFF',
   },
-  // separator: {
-  //   height: 34,
-  // },
 });
