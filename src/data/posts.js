@@ -6,7 +6,7 @@ export const posts = [
   {
     id: '1',
     img: forest,
-    title: 'Захід на Чорному морі',
+    title: 'Ліс',
     country: 'Ukraine',
     region: "Ivano-Frankivs'k Region",
     comment: [],

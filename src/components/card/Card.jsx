@@ -2,13 +2,13 @@ import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Image, Text, View } from 'react-native';
 
-export const Card = ({ data }) => {
-  const { img, title, comment, region, country } = data;
+export const Card = ({ data, likeCount }) => {
+  const { img, title, comment, region, country, rating } = data;
 
   const [comments, setComments] = useState(comment.length);
 
   return (
-    <>
+    <View style={styles.container}>
       <Image source={img} style={styles.img} resizeMode="contain" />
       <Text style={styles.title}>{title}</Text>
       <View style={styles.info}>
@@ -16,18 +16,30 @@ export const Card = ({ data }) => {
           <Feather name="message-circle" size={24} color={comments ? '#FF6C00' : '#BDBDBD'} />
           <Text style={styles.infoText}>{comment.length}</Text>
         </View>
-        <View style={styles.wrap}>
+        {likeCount && (
+          <View style={styles.wrap}>
+            <Feather name="thumbs-up" size={24} color={rating ? '#FF6C00' : '#BDBDBD'} />
+            <Text style={styles.infoText}>{rating}</Text>
+          </View>
+        )}
+        <View style={[styles.wrap, { marginLeft: 'auto' }]}>
           <Feather name="map-pin" size={24} color="#BDBDBD" />
-          <Text
-            style={[styles.infoText, { textDecorationLine: 'underline' }]}
-          >{`${region}, ${country}`}</Text>
+          <Text style={[styles.infoText, { textDecorationLine: 'underline' }]}>
+            {likeCount ? `${country}` : `${region}, ${country}`}
+          </Text>
         </View>
       </View>
-    </>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#fff',
+    paddingBottom: 34,
+    paddingLeft: 16,
+    paddingRight: 16,
+  },
   img: {
     width: '100%',
     height: 240,
@@ -42,10 +54,12 @@ const styles = StyleSheet.create({
   info: {
     marginTop: 8,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
+    gap: 24,
   },
   wrap: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
   },
   commentCounter: {

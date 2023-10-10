@@ -10,12 +10,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Title, CustomButton, RegistrationForm, AuthScreenButton } from '../components';
+import { Title, UserFoto, RegistrationForm, AuthScreenButton } from '../components';
 const image = require('../../assets/photo-bg.png');
-import { AntDesign } from '@expo/vector-icons';
 
 export const RegistrationScreen = () => {
-  const [userPhoto, setUserPhoto] = useState(null);
   const [keyboardOpen, setKeyboardOpen] = useState(true);
   const navigation = useNavigation();
 
@@ -44,20 +42,7 @@ export const RegistrationScreen = () => {
               keyboardVerticalOffset={0}
               style={styles.wrapKeyboard}
             >
-              <View style={styles.imgWrap}>
-                <CustomButton
-                  onPress={() => {
-                    Keyboard.dismiss();
-                  }}
-                  styleBtn={styles.iconBtn}
-                >
-                  <AntDesign
-                    name="pluscircleo"
-                    size={25}
-                    style={userPhoto ? styles.iconActive : styles.icon}
-                  />
-                </CustomButton>
-              </View>
+              <UserFoto toTop />
               <Title text="Реєстрація" />
 
               <RegistrationForm keyboardOpen={keyboardOpen} />
@@ -98,26 +83,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingTop: 60,
-  },
-  imgWrap: {
-    width: 120,
-    height: 120,
-    position: 'absolute',
-    top: -60,
-
-    backgroundColor: '#f6f6f6',
-    borderRadius: 16,
-  },
-  iconBtn: {
-    right: '-100%',
-    top: '100%',
-    transform: [{ translateY: -37.5 }, { translateX: -12.5 }],
-  },
-  iconActive: {
-    color: '#BDBDBD',
-    transform: [{ rotate: '45deg' }],
-  },
-  icon: {
-    color: '#FF6C00',
   },
 });

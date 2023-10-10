@@ -5,3 +5,4 @@ export * from './buttons/LogOutButton';
 export * from './accessForm/RegistrationForm';
 export * from './accessForm/LoginForm';
 export * from './card/Card';
+export * from './UserFoto';
