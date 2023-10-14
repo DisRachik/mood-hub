@@ -37,8 +37,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
     paddingBottom: 34,
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingHorizontal: 16,
   },
   img: {
     width: '100%',
@@ -54,7 +53,6 @@ const styles = StyleSheet.create({
   info: {
     marginTop: 8,
     flexDirection: 'row',
-    // justifyContent: 'space-between',
     gap: 24,
   },
   wrap: {

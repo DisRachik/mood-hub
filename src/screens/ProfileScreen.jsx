@@ -33,17 +33,14 @@ const styles = StyleSheet.create({
   imageBg: {
     flex: 1,
   },
-  transparent: {
-    height: 147,
-  },
   userWrap: {
     marginTop: 119,
+    paddingBottom: 33,
+    paddingHorizontal: 16,
     alignItems: 'center',
     width: '100%',
     backgroundColor: '#FFFFFF',
     paddingTop: 46,
-    paddingLeft: 16,
-    paddingRight: 16,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },

@@ -1,6 +1,6 @@
+import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { useState } from 'react';
 import { CustomButton } from '../buttons/CustomButton';
 
 export const LoginForm = ({ keyboardOpen }) => {
@@ -111,8 +111,7 @@ const styles = StyleSheet.create({
   formWrap: {
     width: '100%',
     marginTop: 33,
-    paddingRight: 16,
-    paddingLeft: 16,
+    paddingHorizontal: 16,
     gap: 16,
   },
   input: {

@@ -140,8 +140,7 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     marginTop: 33,
-    paddingRight: 16,
-    paddingLeft: 16,
+    paddingHorizontal: 16,
     gap: 16,
   },
   input: {

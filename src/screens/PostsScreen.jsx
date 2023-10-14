@@ -27,8 +27,7 @@ export const PostsScreen = () => {
 const styles = StyleSheet.create({
   userWrap: {
     paddingBottom: 32,
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
@@ -51,8 +50,7 @@ const styles = StyleSheet.create({
     color: 'rgba(33, 33, 33, 0.80)',
   },
   cardsWrap: {
-    paddingTop: 32,
-    paddingBottom: 32,
+    paddingVertical: 32,
     marginBottom: 1,
     width: '100%',
     backgroundColor: '#FFFFFF',
