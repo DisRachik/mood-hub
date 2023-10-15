@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { CustomButton } from '../buttons/CustomButton';
+import { useAuth } from '../../navigation/AuthProvider';
 
 export const LoginForm = ({ keyboardOpen }) => {
+  const { onAccess } = useAuth();
   const [activeInput, setActiveInput] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,6 +26,8 @@ export const LoginForm = ({ keyboardOpen }) => {
   const onSubmit = (data) => {
     console.log(data);
     reset();
+
+    onAccess();
   };
 
   return (

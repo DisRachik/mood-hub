@@ -3,21 +3,23 @@ import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const HomeStack = createBottomTabNavigator();
 
-import {
-  PostsScreen,
-  CommentsScreen,
-  ProfileScreen,
-  MapScreen,
-  CreatePostsScreen,
-} from '../screens';
-import { LogOutButton } from '../components';
-import { headerOptions } from './headerOptions';
 import { View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+
+import { PostsScreen } from '../screens/PostsScreen';
+import { CommentsScreen } from '../screens/CommentsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { MapScreen } from '../screens/MapScreen';
+import { CreatePostsScreen } from '../screens/CreatePostsScreen';
+
+import { LogOutButton } from '../components/buttons/LogOutButton';
+import { headerOptions } from './headerOptions';
+import { useAuth } from './AuthProvider';
 
 export const HomeNavigation = () => {
   const navigation = useNavigation();
   const [lastScreen, setLastScreen] = useState(null);
+  const { onAccess } = useAuth();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('state', () => {
@@ -30,7 +32,9 @@ export const HomeNavigation = () => {
     return unsubscribe;
   }, [navigation]);
 
-  const onLogOut = () => alert('Shortly');
+  const onLogOut = () => {
+    onAccess();
+  };
 
   return (
     <HomeStack.Navigator screenOptions={headerOptions}>

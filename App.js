@@ -1,15 +1,13 @@
-import { useState } from 'react';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 
-import { AuthNavigation, HomeNavigation } from './src/navigation';
+import { AuthProvider } from './src/navigation/AuthProvider';
+import { Main } from './src/navigation/Main';
 
 export default function App() {
-  const [isSignedIn, setIsSignedIn] = useState(true);
-
   const [fontsLoaded] = useFonts({
     'Roboto-Regular': require('./assets/fonts/Roboto-Regular.ttf'),
     'Roboto-Medium': require('./assets/fonts/Roboto-Medium.ttf'),
@@ -20,12 +18,12 @@ export default function App() {
     return null;
   }
 
-  const onAuth = () => setIsSignedIn((isSignedIn) => !isSignedIn);
-
   return (
-    <NavigationContainer>
-      {!isSignedIn ? <AuthNavigation /> : <HomeNavigation />}
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+        <Main />
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </AuthProvider>
   );
 }

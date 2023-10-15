@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, View, FlatList } from 'react-native';
 import UserFoto from '../../assets/images.jpg';
 import { posts } from '../data/posts';
-import { Card } from '../components';
+import { Card } from '../components/Card';
 
 export const PostsScreen = () => {
   return (

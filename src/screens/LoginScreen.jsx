@@ -10,7 +10,10 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { Title, LoginForm, AuthScreenButton } from '../components';
+
+import { Title } from '../components/Title';
+import { LoginForm } from '../components/accessForm/LoginForm';
+import { AuthScreenButton } from '../components/buttons/AuthScreenButton';
 const image = require('../../assets/photo-bg.png');
 
 export const LoginScreen = () => {

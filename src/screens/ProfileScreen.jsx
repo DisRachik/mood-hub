@@ -1,11 +1,19 @@
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
-import { Card, LogOutButton, Title, UserFoto } from '../components';
+import { Card } from '../components/Card';
+import { LogOutButton } from '../components/buttons/LogOutButton';
+import { Title } from '../components/Title';
+import { UserFoto } from '../components/UserFoto';
 import { posts } from '../data/posts';
+import { useAuth } from '../navigation/AuthProvider';
 
 const image = require('../../assets/photo-bg.png');
 
 export const ProfileScreen = () => {
-  const onLogOut = () => alert('Shortly');
+  const { onAccess } = useAuth();
+
+  const onLogOut = () => {
+    onAccess();
+  };
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>

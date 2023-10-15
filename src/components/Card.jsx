@@ -1,6 +1,6 @@
-import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import { StyleSheet, Image, Text, View } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 
 export const Card = ({ data, likeCount }) => {
   const { img, title, comment, region, country, rating } = data;

@@ -13,7 +13,7 @@ import {
   Text,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { CustomButton } from '../components';
+import { CustomButton } from '../components/buttons/CustomButton';
 
 const initialFormState = {
   image: '',
