@@ -1,19 +1,25 @@
 import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
 import {
+  ImageBackground,
   Keyboard,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Title, CustomButton, RegistrationForm } from '../components';
+
+import { Title } from '../components/Title';
+import { UserFoto } from '../components/UserFoto';
+import { RegistrationForm } from '../components/accessForm/RegistrationForm';
+import { AuthScreenButton } from '../components/buttons/AuthScreenButton';
+const image = require('../../assets/photo-bg.png');
 
 export const RegistrationScreen = () => {
-  const [userPhoto, setUserPhoto] = useState(null);
   const [keyboardOpen, setKeyboardOpen] = useState(true);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
@@ -32,40 +38,45 @@ export const RegistrationScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <SafeAreaView style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={0}
-          style={styles.wrapKeyboard}
-        >
-          <View style={styles.imgWrap}>
-            <CustomButton
-              iconName="pluscircleo"
-              onPress={() => {
-                Keyboard.dismiss();
-              }}
-              iconSize={25}
-              styleBtn={styles.iconBtn}
-              iconStyle={userPhoto ?? styles.iconActive}
-            />
-          </View>
-          <Title text="Реєстрація" />
+      <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={[styles.container, !keyboardOpen && styles.keyboardActive]}>
+            <KeyboardAvoidingView
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={0}
+              style={styles.wrapKeyboard}
+            >
+              <UserFoto toTop />
+              <Title text="Реєстрація" />
 
-          <RegistrationForm keyboardOpen={keyboardOpen} />
-          {keyboardOpen && <Text style={styles.informText}>Вже є акаунт? Увійти</Text>}
-        </KeyboardAvoidingView>
-      </SafeAreaView>
+              <RegistrationForm keyboardOpen={keyboardOpen} />
+              {keyboardOpen && (
+                <AuthScreenButton
+                  text="Вже є акаунт? "
+                  nameNavigationScreen="Увійти"
+                  onPress={() => navigation.navigate('Login')}
+                />
+              )}
+            </KeyboardAvoidingView>
+          </View>
+        </TouchableWithoutFeedback>
+      </ImageBackground>
     </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
+  imageBg: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
   container: {
     flex: 0.68,
     alignItems: 'center',
     backgroundColor: '#fff',
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
+    padding: -25,
   },
   keyboardActive: {
     flex: 0,
@@ -76,27 +87,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingTop: 60,
-  },
-  imgWrap: {
-    width: 120,
-    height: 120,
-    position: 'absolute',
-    top: -60,
-
-    backgroundColor: '#f6f6f6',
-    borderRadius: 16,
-  },
-  iconBtn: {
-    right: '-100%',
-    top: '100%',
-    transform: [{ translateY: -37.5 }, { translateX: -12.5 }],
-  },
-  iconActive: {
-    color: '#FF6C00',
-  },
-  informText: {
-    marginTop: 16,
-    fontWeight: 400,
-    color: '#1B4371',
   },
 });
