@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FontAwesome } from '@expo/vector-icons';
+
 import {
   Image,
   StyleSheet,
@@ -12,7 +12,7 @@ import {
   ScrollView,
   Text,
 } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, FontAwesome } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
 
 const initialFormState = {
@@ -33,72 +33,83 @@ export const CreatePostsScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-        <ScrollView style={styles.container}>
-          <View>
-            <View style={styles.imgWrap}>
-              {newImage && (
-                <Image source={require('../data/img/decline.jpg')} style={styles.img}></Image>
-              )}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.wrapKeyboard}
+      >
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+          <View style={[styles.container, activeInput && { paddingBottom: 100 }]}>
+            <View>
+              <View style={styles.imgWrap}>
+                {newImage && (
+                  <Image source={require('../data/img/decline.jpg')} style={styles.img}></Image>
+                )}
+              </View>
+              <CustomButton
+                title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
+                onPress={() => {}}
+                titleStyle={{ color: '#BDBDBD' }}
+              />
+              <CustomButton styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}>
+                <FontAwesome name="camera" size={24} color={newImage ? '#BDBDBD' : '#FFFFFF'} />
+              </CustomButton>
             </View>
-            <CustomButton
-              title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
-              onPress={() => {}}
-              titleStyle={{ color: '#BDBDBD' }}
-            />
-            <CustomButton styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}>
-              <FontAwesome name="camera" size={24} color={newImage ? '#BDBDBD' : '#FFFFFF'} />
-            </CustomButton>
-          </View>
-          <TextInput
-            name="title"
-            style={[styles.input, activeInput === 'title' && styles.inputActive]}
-            placeholder="Назва..."
-            placeholderTextColor="#BDBDBD"
-            onFocus={() => {
-              setActiveInput('title');
-            }}
-            onBlur={() => {
-              setActiveInput(null);
-            }}
-            value={formState.title}
-            onChangeText={(value) => setFormState((prevState) => ({ ...prevState, title: value }))}
-          />
-          <View style={styles.inputWrap}>
-            <Feather name="map-pin" size={24} style={styles.mapPinIcon} />
             <TextInput
-              name="location"
-              style={[
-                styles.input,
-                styles.inputLocation,
-                activeInput === 'location' && styles.inputActive,
-              ]}
-              placeholder="Місцевість..."
+              name="title"
+              style={[styles.input, activeInput === 'title' && styles.inputActive]}
+              placeholder="Назва..."
               placeholderTextColor="#BDBDBD"
               onFocus={() => {
-                setActiveInput('location');
+                setActiveInput('title');
               }}
               onBlur={() => {
                 setActiveInput(null);
               }}
-              value={formState.location}
+              value={formState.title}
               onChangeText={(value) =>
-                setFormState((prevState) => ({ ...prevState, location: value }))
+                setFormState((prevState) => ({ ...prevState, title: value }))
               }
             />
-          </View>
+            <View style={styles.inputWrap}>
+              <Feather name="map-pin" size={24} style={styles.mapPinIcon} />
+              <TextInput
+                name="location"
+                style={[
+                  styles.input,
+                  styles.inputLocation,
+                  activeInput === 'location' && styles.inputActive,
+                ]}
+                placeholder="Місцевість..."
+                placeholderTextColor="#BDBDBD"
+                onFocus={() => {
+                  setActiveInput('location');
+                }}
+                onBlur={() => {
+                  setActiveInput(null);
+                }}
+                value={formState.location}
+                onChangeText={(value) =>
+                  setFormState((prevState) => ({ ...prevState, location: value }))
+                }
+              />
+            </View>
 
-          {newImage ? (
-            <CustomButton
-              title="Опубліковати"
-              onPress={onSubmit}
-              styleBtn={styles.formBtn}
-              titleStyle={styles.formBtnText}
-              disabled={newImage}
-            />
-          ) : (
-            <Text style={styles.text}>Опубліковати</Text>
-          )}
+            {newImage ? (
+              <CustomButton
+                title="Опубліковати"
+                onPress={onSubmit}
+                styleBtn={styles.formBtn}
+                titleStyle={styles.formBtnText}
+                disabled={newImage}
+              />
+            ) : (
+              <Text style={styles.text}>Опубліковати</Text>
+            )}
+
+            <CustomButton styleBtn={[styles.deleteIcon, !newImage && { borderColor: '#FFFFFF' }]}>
+              <Feather name="trash-2" size={24} color={newImage ? '#212121' : '#BDBDBD'} />
+            </CustomButton>
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -106,10 +117,15 @@ export const CreatePostsScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  wrapKeyboard: {
+    flex: 1,
+  },
   container: {
-    paddingTop: 32,
-    paddingHorizontal: 16,
+    flex: 1,
     backgroundColor: '#f6f6f6',
+    paddingTop: 32,
+    paddingBottom: 22,
+    paddingHorizontal: 16,
   },
   imgWrap: {
     height: 240,
@@ -175,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   formBtnText: {
-    color: '#fff',
+    color: '#FFFFFF',
   },
   text: {
     textAlign: 'center',
@@ -183,5 +199,14 @@ const styles = StyleSheet.create({
     color: '#BDBDBD',
     fontSize: 16,
     fontFamily: 'Roboto-Regular',
+  },
+  deleteIcon: {
+    width: 60,
+    height: 60,
+    alignSelf: 'center',
+    marginTop: 'auto',
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: '#FF6C00',
   },
 });
