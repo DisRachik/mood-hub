@@ -51,7 +51,7 @@ export const CreatePostsScreen = () => {
                 titleStyle={{ color: '#BDBDBD' }}
               />
               <CustomButton styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}>
-                <FontAwesome name="camera" size={24} color={newImage ? '#BDBDBD' : '#FFFFFF'} />
+                <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
               </CustomButton>
             </View>
             <TextInput
@@ -106,7 +106,10 @@ export const CreatePostsScreen = () => {
               <Text style={styles.text}>Опубліковати</Text>
             )}
 
-            <CustomButton styleBtn={[styles.deleteIcon, !newImage && { borderColor: '#FFFFFF' }]}>
+            <CustomButton
+              styleBtn={[styles.deleteIcon, !newImage && { borderColor: '#FFFFFF' }]}
+              onPress={() => setFormState(initialFormState)}
+            >
               <Feather name="trash-2" size={24} color={newImage ? '#212121' : '#BDBDBD'} />
             </CustomButton>
           </View>
@@ -122,7 +125,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f6f6f6',
+    backgroundColor: '#FFFFFF',
     paddingTop: 32,
     paddingBottom: 22,
     paddingHorizontal: 16,
@@ -156,7 +159,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
     padding: 15,
     borderWidth: 0.5,
-    borderColor: '#E8E8E8',
+    borderColor: '#f6f6f6',
     borderStyle: 'solid',
     borderRadius: 8,
 
