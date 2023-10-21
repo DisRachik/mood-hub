@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import {
-  Image,
   StyleSheet,
   View,
   TextInput,
@@ -14,6 +13,7 @@ import {
 } from 'react-native';
 import { Feather, FontAwesome } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
+import { FotoCamera } from '../components/FotoCamera';
 
 const initialFormState = {
   image: '',
@@ -22,7 +22,7 @@ const initialFormState = {
 };
 
 export const CreatePostsScreen = () => {
-  const [newImage, setNewImage] = useState(false);
+  const [newImage, setNewImage] = useState(true);
   const [activeInput, setActiveInput] = useState(null);
   const [formState, setFormState] = useState(initialFormState);
 
@@ -39,21 +39,8 @@ export const CreatePostsScreen = () => {
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={[styles.container, activeInput && { paddingBottom: 100 }]}>
-            <View>
-              <View style={styles.imgWrap}>
-                {newImage && (
-                  <Image source={require('../data/img/decline.jpg')} style={styles.img}></Image>
-                )}
-              </View>
-              <CustomButton
-                title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
-                onPress={() => {}}
-                titleStyle={{ color: '#BDBDBD' }}
-              />
-              <CustomButton styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}>
-                <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
-              </CustomButton>
-            </View>
+            <FotoCamera />
+
             <TextInput
               name="title"
               style={[styles.input, activeInput === 'title' && styles.inputActive]}
@@ -94,23 +81,22 @@ export const CreatePostsScreen = () => {
               />
             </View>
 
-            {newImage ? (
+            {formState.image ? (
               <CustomButton
                 title="Опубліковати"
                 onPress={onSubmit}
                 styleBtn={styles.formBtn}
                 titleStyle={styles.formBtnText}
-                disabled={newImage}
               />
             ) : (
               <Text style={styles.text}>Опубліковати</Text>
             )}
 
             <CustomButton
-              styleBtn={[styles.deleteIcon, !newImage && { borderColor: '#FFFFFF' }]}
+              styleBtn={[styles.deleteIcon, !formState.image && { borderColor: '#FFFFFF' }]}
               onPress={() => setFormState(initialFormState)}
             >
-              <Feather name="trash-2" size={24} color={newImage ? '#212121' : '#BDBDBD'} />
+              <Feather name="trash-2" size={24} color={formState.image ? '#212121' : '#BDBDBD'} />
             </CustomButton>
           </View>
         </ScrollView>
@@ -129,28 +115,6 @@ const styles = StyleSheet.create({
     paddingTop: 32,
     paddingBottom: 22,
     paddingHorizontal: 16,
-  },
-  imgWrap: {
-    height: 240,
-    paddingBottom: 8,
-  },
-  img: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-  },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 50,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -30 }, { translateY: -45 }],
-
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   input: {
