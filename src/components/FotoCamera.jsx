@@ -4,7 +4,7 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
 
-import { Image, View, StyleSheet, Alert } from 'react-native';
+import { Image, View, StyleSheet, Alert, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { CustomButton } from './buttons/CustomButton';
 
@@ -15,6 +15,9 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
   const [location, setLocation] = useState('');
 
+  const { width } = useWindowDimensions();
+  const imgWrapHeight = width * 0.7;
+
   useEffect(() => {
     (async () => {
       try {
@@ -23,7 +26,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
         setPermission(status === 'granted');
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     })();
   }, []);
@@ -33,10 +36,10 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          console.log('У доступі до місцезнаходження відмовлено');
+          console.error('У доступі до місцезнаходження відмовлено');
         }
       } catch (error) {
-        console.log(error);
+        console.error(error);
       }
     })();
   }, []);
@@ -105,7 +108,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
   return (
     <View>
-      <View style={styles.imgWrap}>
+      <View style={[styles.imgWrap, { height: imgWrapHeight }]}>
         {newImage ? (
           <Image source={newImage} style={styles.img} />
         ) : (
@@ -137,7 +140,6 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
 const styles = StyleSheet.create({
   imgWrap: {
-    height: 240,
     marginBottom: 8,
     borderRadius: 8,
     overflow: 'hidden',

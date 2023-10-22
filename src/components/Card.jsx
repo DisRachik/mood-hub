@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Image, Text, View } from 'react-native';
+import { StyleSheet, Image, Text, View, useWindowDimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 export const Card = ({ data, likeCount }) => {
@@ -7,9 +7,12 @@ export const Card = ({ data, likeCount }) => {
 
   const [comments, setComments] = useState(comment.length);
 
+  const { width } = useWindowDimensions();
+  const imgHeight = width * 0.7;
+
   return (
     <View style={styles.container}>
-      <Image source={img} style={styles.img} resizeMode="contain" />
+      <Image source={img} style={[styles.img, { height: imgHeight }]} resizeMode="contain" />
       <Text style={styles.title}>{title}</Text>
       <View style={styles.info}>
         <View style={styles.wrap}>
@@ -41,7 +44,6 @@ const styles = StyleSheet.create({
   },
   img: {
     width: '100%',
-    height: 240,
     borderRadius: 8,
   },
   title: {

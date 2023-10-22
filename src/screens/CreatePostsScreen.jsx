@@ -14,6 +14,8 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
 import { FotoCamera } from '../components/FotoCamera';
+import { useCollection } from '../navigation/CollectionContext';
+import { useNavigation } from '@react-navigation/native';
 
 const initialFormState = {
   image: '',
@@ -23,6 +25,9 @@ const initialFormState = {
 };
 
 export const CreatePostsScreen = () => {
+  const { addPost } = useCollection();
+  const navigation = useNavigation();
+
   const [formState, setFormState] = useState(initialFormState);
   const [activeInput, setActiveInput] = useState(null);
   const [error, setError] = useState(null);
@@ -30,6 +35,17 @@ export const CreatePostsScreen = () => {
   useEffect(() => {
     setError(null);
   }, [formState.place]);
+
+  const addNewFoto = async (data) => {
+    try {
+      await addPost(data);
+
+      navigation.navigate('PostsScreen');
+      setFormState(initialFormState);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onSubmit = () => {
     const { image, title, location, place } = formState;
@@ -39,10 +55,11 @@ export const CreatePostsScreen = () => {
       setError('Укажіть лише регіон і країну через кому!');
       return;
     }
+
     const region = partsAddress[0].trim();
     const country = partsAddress[1].trim();
     const formData = {
-      img: image.uri,
+      img: image,
       title,
       location,
       region,
@@ -51,7 +68,7 @@ export const CreatePostsScreen = () => {
       rating: 0,
       id: Date.now().toString(),
     };
-    setFormState(initialFormState);
+    addNewFoto(formData);
   };
 
   const onClearForm = () => setFormState(initialFormState);

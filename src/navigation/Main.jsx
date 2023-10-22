@@ -1,9 +1,20 @@
 import { AuthNavigation } from './AuthNavigation';
 import { useAuth } from './AuthProvider';
+import { CollectionProvider } from './CollectionContext';
 import { HomeNavigation } from './HomeNavigation';
 
 export const Main = () => {
   const { isSignedIn } = useAuth();
 
-  return <>{!isSignedIn ? <AuthNavigation /> : <HomeNavigation />}</>;
+  return (
+    <>
+      {!isSignedIn ? (
+        <AuthNavigation />
+      ) : (
+        <CollectionProvider>
+          <HomeNavigation />
+        </CollectionProvider>
+      )}
+    </>
+  );
 };
