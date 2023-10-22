@@ -1,7 +1,7 @@
 import { AuthNavigation } from './AuthNavigation';
 import { useAuth } from './AuthProvider';
 import { CollectionProvider } from './CollectionContext';
-import { HomeNavigation } from './HomeNavigation';
+import { MainNavigation } from './MainNavigation';
 
 export const Main = () => {
   const { isSignedIn } = useAuth();
@@ -12,7 +12,7 @@ export const Main = () => {
         <AuthNavigation />
       ) : (
         <CollectionProvider>
-          <HomeNavigation />
+          <MainNavigation />
         </CollectionProvider>
       )}
     </>
