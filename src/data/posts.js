@@ -11,6 +11,7 @@ export const posts = [
     region: "Ivano-Frankivs'k Region",
     comment: [],
     rating: 153,
+    location: { latitude: 48.36180277609808, longitude: 24.40477226883714 },
   },
   {
     id: '2',
@@ -36,6 +37,7 @@ export const posts = [
       },
     ],
     rating: 200,
+    location: { latitude: 45.416004014588495, longitude: 34.50752422132909 },
   },
   {
     id: '3',
@@ -45,5 +47,6 @@ export const posts = [
     region: 'Venice',
     comment: [],
     rating: 200,
+    location: { latitude: 45.482028331152584, longitude: 12.302573780758442 },
   },
 ];

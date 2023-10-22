@@ -2,17 +2,18 @@ import { useEffect, useState } from 'react';
 
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
+import * as Location from 'expo-location';
 
 import { Image, View, StyleSheet, Alert } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { CustomButton } from './buttons/CustomButton';
 
-export const FotoCamera = () => {
-  const [newFoto, setNewFoto] = useState('');
-
+export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
   const [type, setType] = useState(CameraType.back);
   const [permission, setPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
+
+  const [location, setLocation] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -27,55 +28,108 @@ export const FotoCamera = () => {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      try {
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          console.log('У доступі до місцезнаходження відмовлено');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      if (!location) {
+        return;
+      }
+
+      try {
+        const address = await Location.reverseGeocodeAsync(location);
+        const { region, country } = address[0];
+
+        photoData((prevState) => ({
+          ...prevState,
+          place: `${region}, ${country}`,
+          location,
+        }));
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [location]);
+
   const toggleCameraType = () => {
     setType((current) => (current === CameraType.back ? CameraType.front : CameraType.back));
   };
 
   const onPhoto = async () => {
-    if (newFoto) {
+    if (newImage) {
       try {
-        await MediaLibrary.deleteAssetsAsync(newFoto);
+        // await MediaLibrary.deleteAssetsAsync(newImage);
+        setLocation('');
+        onClearForm();
+      } catch (error) {
+        console.error(error);
+      }
+      return;
+    }
+
+    if (cameraRef) {
+      try {
+        const { uri } = await cameraRef.takePictureAsync();
+        const asset = await MediaLibrary.createAssetAsync(uri);
+        photoData((prevState) => ({
+          ...prevState,
+          image: asset,
+        }));
       } catch (error) {
         console.error(error);
       }
 
-      setNewFoto('');
-      return;
-    }
-    if (cameraRef) {
-      const { uri } = await cameraRef.takePictureAsync();
-      const asset = await MediaLibrary.createAssetAsync(uri);
-      setNewFoto(asset);
+      try {
+        let location = await Location.getCurrentPositionAsync({});
+        const coords = {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        };
+        setLocation(coords);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
   return (
     <View>
       <View style={styles.imgWrap}>
-        {newFoto ? (
-          <Image source={newFoto} style={styles.img} />
+        {newImage ? (
+          <Image source={newImage} style={styles.img} />
         ) : (
           <Camera style={styles.camera} type={type} ref={setCameraRef} />
         )}
       </View>
       <CustomButton
-        styleBtn={[styles.iconCircle, newFoto && { color: '#FFFFFF' }]}
+        styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}
         onPress={onPhoto}
       >
-        <FontAwesome name="camera" size={24} color={newFoto ? '#FFFFFF' : '#BDBDBD'} />
+        <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
       </CustomButton>
 
-      {permission && !newFoto && (
+      {permission && !newImage && (
         <CustomButton styleBtn={styles.iconTypeFoto} onPress={toggleCameraType}>
           <FontAwesome name="refresh" size={24} color="#BDBDBD" />
         </CustomButton>
       )}
 
       <CustomButton
-        title={newFoto ? 'Редагувати фото' : 'Завантажте фото'}
-        onPress={() => newFoto && setNewFoto('')}
+        title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
+        onPress={() => newImage && onClearForm()}
         titleStyle={{ color: '#BDBDBD' }}
-        disabled={newFoto ? false : true}
+        disabled={newImage ? false : true}
       />
     </View>
   );

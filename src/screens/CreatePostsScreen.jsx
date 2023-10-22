@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
   StyleSheet,
@@ -11,7 +11,7 @@ import {
   ScrollView,
   Text,
 } from 'react-native';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
 import { FotoCamera } from '../components/FotoCamera';
 
@@ -19,17 +19,44 @@ const initialFormState = {
   image: '',
   title: '',
   location: '',
+  place: '',
 };
 
 export const CreatePostsScreen = () => {
-  const [newImage, setNewImage] = useState(true);
-  const [activeInput, setActiveInput] = useState(null);
   const [formState, setFormState] = useState(initialFormState);
+  const [activeInput, setActiveInput] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setError(null);
+  }, [formState.place]);
 
   const onSubmit = () => {
-    console.log(formState);
+    const { image, title, location, place } = formState;
+
+    const partsAddress = place.split(',');
+    if (partsAddress.length !== 2) {
+      setError('Укажіть лише регіон і країну через кому!');
+      return;
+    }
+    const region = partsAddress[0].trim();
+    const country = partsAddress[1].trim();
+    const formData = {
+      img: image.uri,
+      title,
+      location,
+      region,
+      country,
+      comment: [],
+      rating: 0,
+      id: Date.now().toString(),
+    };
     setFormState(initialFormState);
   };
+
+  const onClearForm = () => setFormState(initialFormState);
+  const isFormValid = formState.image && formState.title && formState.place;
+  const isFormClear = formState.image || formState.title || formState.place;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -39,7 +66,11 @@ export const CreatePostsScreen = () => {
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={[styles.container, activeInput && { paddingBottom: 100 }]}>
-            <FotoCamera />
+            <FotoCamera
+              photoData={setFormState}
+              onClearForm={onClearForm}
+              newImage={formState.image}
+            />
 
             <TextInput
               name="title"
@@ -60,28 +91,29 @@ export const CreatePostsScreen = () => {
             <View style={styles.inputWrap}>
               <Feather name="map-pin" size={24} style={styles.mapPinIcon} />
               <TextInput
-                name="location"
+                name="place"
                 style={[
                   styles.input,
-                  styles.inputLocation,
-                  activeInput === 'location' && styles.inputActive,
+                  styles.inputPlace,
+                  activeInput === 'place' && styles.inputActive,
                 ]}
                 placeholder="Місцевість..."
                 placeholderTextColor="#BDBDBD"
                 onFocus={() => {
-                  setActiveInput('location');
+                  setActiveInput('place');
                 }}
                 onBlur={() => {
                   setActiveInput(null);
                 }}
-                value={formState.location}
+                value={formState.place}
                 onChangeText={(value) =>
-                  setFormState((prevState) => ({ ...prevState, location: value }))
+                  setFormState((prevState) => ({ ...prevState, place: value }))
                 }
               />
+              {error && <Text style={{ color: 'red' }}>{error}</Text>}
             </View>
 
-            {formState.image ? (
+            {isFormValid ? (
               <CustomButton
                 title="Опубліковати"
                 onPress={onSubmit}
@@ -93,8 +125,8 @@ export const CreatePostsScreen = () => {
             )}
 
             <CustomButton
-              styleBtn={[styles.deleteIcon, !formState.image && { borderColor: '#FFFFFF' }]}
-              onPress={() => setFormState(initialFormState)}
+              styleBtn={[styles.deleteIcon, !isFormClear && { borderColor: '#FFFFFF' }]}
+              onPress={onClearForm}
             >
               <Feather name="trash-2" size={24} color={formState.image ? '#212121' : '#BDBDBD'} />
             </CustomButton>
@@ -134,7 +166,7 @@ const styles = StyleSheet.create({
   inputWrap: {
     marginTop: 16,
   },
-  inputLocation: {
+  inputPlace: {
     paddingLeft: 28,
     marginTop: 0,
   },
