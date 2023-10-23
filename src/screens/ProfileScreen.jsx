@@ -68,8 +68,4 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   ItemsWrap: { width: '100%' },
-  cardsWrap: {
-    paddingTop: 32,
-    marginBottom: 1,
-  },
 });

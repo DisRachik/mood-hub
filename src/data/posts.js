@@ -21,16 +21,19 @@ export const posts = [
     region: 'Crimea',
     comment: [
       {
+        id: 1,
         text: 'Really love your most recent photo. I’ve been trying to capture the same thing for a few months and would love some tips!',
         date: '09 червня, 2020 | 08:40',
         user: '',
       },
       {
+        id: 2,
         text: 'A fast 50mm like f1.8 would help with the bokeh. I’ve been using primes as they tend to get a bit sharper images.',
         date: '09 червня, 2020 | 09:14',
-        user: '',
+        user: 'I`m',
       },
       {
+        id: 3,
         text: 'Thank you! That was very helpful!',
         date: '09 червня, 2020 | 09:20',
         user: '',

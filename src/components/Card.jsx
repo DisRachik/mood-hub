@@ -6,7 +6,7 @@ import { CustomButton } from './buttons/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 
 export const Card = ({ data, likeCount }) => {
-  const { img, title, comment, region, country, rating, location } = data;
+  const { img, title, comment, region, country, rating, location, id } = data;
 
   const [comments] = useState(comment.length);
   const navigation = useNavigation();
@@ -21,7 +21,10 @@ export const Card = ({ data, likeCount }) => {
       <Image source={img} style={[styles.img, { height: imgHeight }]} resizeMode="contain" />
       <Text style={styles.title}>{title}</Text>
       <View style={styles.info}>
-        <CustomButton styleBtn={styles.wrap} onPress={() => navigation.navigate('CommentsScreen')}>
+        <CustomButton
+          styleBtn={styles.wrap}
+          onPress={() => navigation.navigate('CommentsScreen', data)}
+        >
           <Feather name="message-circle" size={24} color={comments ? '#FF6C00' : '#BDBDBD'} />
           <Text style={styles.infoText}>{comment.length}</Text>
         </CustomButton>
