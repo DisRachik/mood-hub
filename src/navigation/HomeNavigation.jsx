@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const HomeStack = createBottomTabNavigator();
@@ -43,6 +42,7 @@ export const HomeNavigation = () => {
         component={CreatePostsScreen}
         options={{
           title: 'Створити публікацію',
+          unmountOnBlur: true,
           tabBarIcon: ({ focused, color }) => (
             <View style={[styles.wrap, focused && styles.wrapFocus]}>
               <Feather name="plus" size={25} color={color} />

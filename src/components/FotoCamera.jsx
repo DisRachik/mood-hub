@@ -4,7 +4,7 @@ import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
 
-import { Image, View, StyleSheet, Alert, useWindowDimensions } from 'react-native';
+import { Image, View, StyleSheet, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { CustomButton } from './buttons/CustomButton';
 
@@ -14,6 +14,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
   const [cameraRef, setCameraRef] = useState(null);
 
   const [location, setLocation] = useState('');
+  const [isLoading, setIsLoading] = useState('fulfilled');
 
   const { width } = useWindowDimensions();
   const imgWrapHeight = width * 0.7;
@@ -82,6 +83,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
     }
 
     if (cameraRef) {
+      setIsLoading('pending');
       try {
         const { uri } = await cameraRef.takePictureAsync();
         const asset = await MediaLibrary.createAssetAsync(uri);
@@ -91,6 +93,8 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
         }));
       } catch (error) {
         console.error(error);
+      } finally {
+        setIsLoading('fulfilled');
       }
 
       try {
@@ -118,8 +122,12 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
       <CustomButton
         styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}
         onPress={onPhoto}
+        disabled={isLoading === 'pending' ? true : false}
       >
-        <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
+        {isLoading === 'fulfilled' && (
+          <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
+        )}
+        {isLoading === 'pending' && <ActivityIndicator size="large" color="#FF6C00" />}
       </CustomButton>
 
       {permission && !newImage && (
