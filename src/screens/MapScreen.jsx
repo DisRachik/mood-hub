@@ -1,14 +1,32 @@
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, Text } from 'react-native';
+import { useRoute } from '@react-navigation/native';
+import MapView, { Marker } from 'react-native-maps';
+import { StyleSheet, Dimensions } from 'react-native';
 
 export const MapScreen = () => {
+  const {
+    params: { latitude, longitude, title },
+  } = useRoute();
+
   return (
-    <SafeAreaView>
-      <Text>MapScreen</Text>
-    </SafeAreaView>
+    <MapView
+      style={styles.mapStyle}
+      region={{
+        latitude,
+        longitude,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+      }}
+      mapType="standard"
+    >
+      <Marker title={title} coordinate={{ latitude, longitude }} description="Hello" />
+    </MapView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {},
+  mapStyle: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
 });

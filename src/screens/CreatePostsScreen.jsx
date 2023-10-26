@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import {
-  Image,
   StyleSheet,
   View,
   TextInput,
@@ -12,24 +11,69 @@ import {
   ScrollView,
   Text,
 } from 'react-native';
-import { Feather, FontAwesome } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
+import { FotoCamera } from '../components/FotoCamera';
+import { useCollection } from '../navigation/CollectionContext';
+import { useNavigation } from '@react-navigation/native';
 
 const initialFormState = {
   image: '',
   title: '',
   location: '',
+  place: '',
 };
 
 export const CreatePostsScreen = () => {
-  const [newImage, setNewImage] = useState(false);
-  const [activeInput, setActiveInput] = useState(null);
+  const { addPost } = useCollection();
+  const navigation = useNavigation();
+
   const [formState, setFormState] = useState(initialFormState);
+  const [activeInput, setActiveInput] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    setError(null);
+  }, [formState.place]);
+
+  const addNewFoto = async (data) => {
+    try {
+      await addPost(data);
+
+      navigation.navigate('PostsScreen');
+      setFormState(initialFormState);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onSubmit = () => {
-    console.log(formState);
-    setFormState(initialFormState);
+    const { image, title, location, place } = formState;
+
+    const partsAddress = place.split(',');
+    if (partsAddress.length !== 2) {
+      setError('Укажіть лише регіон і країну через кому!');
+      return;
+    }
+
+    const region = partsAddress[0].trim();
+    const country = partsAddress[1].trim();
+    const formData = {
+      img: image,
+      title,
+      location,
+      region,
+      country,
+      comment: [],
+      rating: 0,
+      id: Date.now().toString(),
+    };
+    addNewFoto(formData);
   };
+
+  const onClearForm = () => setFormState(initialFormState);
+  const isFormValid = formState.image && formState.title && formState.place;
+  const isFormClear = formState.image || formState.title || formState.place;
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -39,21 +83,12 @@ export const CreatePostsScreen = () => {
       >
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View style={[styles.container, activeInput && { paddingBottom: 100 }]}>
-            <View>
-              <View style={styles.imgWrap}>
-                {newImage && (
-                  <Image source={require('../data/img/decline.jpg')} style={styles.img}></Image>
-                )}
-              </View>
-              <CustomButton
-                title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
-                onPress={() => {}}
-                titleStyle={{ color: '#BDBDBD' }}
-              />
-              <CustomButton styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}>
-                <FontAwesome name="camera" size={24} color={newImage ? '#BDBDBD' : '#FFFFFF'} />
-              </CustomButton>
-            </View>
+            <FotoCamera
+              photoData={setFormState}
+              onClearForm={onClearForm}
+              newImage={formState.image}
+            />
+
             <TextInput
               name="title"
               style={[styles.input, activeInput === 'title' && styles.inputActive]}
@@ -73,41 +108,44 @@ export const CreatePostsScreen = () => {
             <View style={styles.inputWrap}>
               <Feather name="map-pin" size={24} style={styles.mapPinIcon} />
               <TextInput
-                name="location"
+                name="place"
                 style={[
                   styles.input,
-                  styles.inputLocation,
-                  activeInput === 'location' && styles.inputActive,
+                  styles.inputPlace,
+                  activeInput === 'place' && styles.inputActive,
                 ]}
                 placeholder="Місцевість..."
                 placeholderTextColor="#BDBDBD"
                 onFocus={() => {
-                  setActiveInput('location');
+                  setActiveInput('place');
                 }}
                 onBlur={() => {
                   setActiveInput(null);
                 }}
-                value={formState.location}
+                value={formState.place}
                 onChangeText={(value) =>
-                  setFormState((prevState) => ({ ...prevState, location: value }))
+                  setFormState((prevState) => ({ ...prevState, place: value }))
                 }
               />
+              {error && <Text style={{ color: 'red' }}>{error}</Text>}
             </View>
 
-            {newImage ? (
+            {isFormValid ? (
               <CustomButton
                 title="Опубліковати"
                 onPress={onSubmit}
                 styleBtn={styles.formBtn}
                 titleStyle={styles.formBtnText}
-                disabled={newImage}
               />
             ) : (
               <Text style={styles.text}>Опубліковати</Text>
             )}
 
-            <CustomButton styleBtn={[styles.deleteIcon, !newImage && { borderColor: '#FFFFFF' }]}>
-              <Feather name="trash-2" size={24} color={newImage ? '#212121' : '#BDBDBD'} />
+            <CustomButton
+              styleBtn={[styles.deleteIcon, !isFormClear && { borderColor: '#FFFFFF' }]}
+              onPress={onClearForm}
+            >
+              <Feather name="trash-2" size={24} color={formState.image ? '#212121' : '#BDBDBD'} />
             </CustomButton>
           </View>
         </ScrollView>
@@ -122,32 +160,10 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f6f6f6',
+    backgroundColor: '#FFFFFF',
     paddingTop: 32,
     paddingBottom: 22,
     paddingHorizontal: 16,
-  },
-  imgWrap: {
-    height: 240,
-    paddingBottom: 8,
-  },
-  img: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 8,
-  },
-  iconCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 50,
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [{ translateX: -30 }, { translateY: -45 }],
-
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 
   input: {
@@ -156,7 +172,7 @@ const styles = StyleSheet.create({
     marginTop: 32,
     padding: 15,
     borderWidth: 0.5,
-    borderColor: '#E8E8E8',
+    borderColor: '#f6f6f6',
     borderStyle: 'solid',
     borderRadius: 8,
 
@@ -167,7 +183,7 @@ const styles = StyleSheet.create({
   inputWrap: {
     marginTop: 16,
   },
-  inputLocation: {
+  inputPlace: {
     paddingLeft: 28,
     marginTop: 0,
   },

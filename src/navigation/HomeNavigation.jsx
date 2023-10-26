@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const HomeStack = createBottomTabNavigator();
@@ -7,9 +6,7 @@ import { View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { PostsScreen } from '../screens/PostsScreen';
-import { CommentsScreen } from '../screens/CommentsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
-import { MapScreen } from '../screens/MapScreen';
 import { CreatePostsScreen } from '../screens/CreatePostsScreen';
 
 import { LogOutButton } from '../components/buttons/LogOutButton';
@@ -18,19 +15,7 @@ import { useAuth } from './AuthProvider';
 
 export const HomeNavigation = () => {
   const navigation = useNavigation();
-  const [lastScreen, setLastScreen] = useState(null);
   const { onAccess } = useAuth();
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('state', () => {
-      const { name } = navigation.getCurrentRoute();
-      if (name !== 'CreatePostsScreen') {
-        setLastScreen(name);
-      }
-    });
-
-    return unsubscribe;
-  }, [navigation]);
 
   const onLogOut = () => {
     onAccess();
@@ -57,6 +42,7 @@ export const HomeNavigation = () => {
         component={CreatePostsScreen}
         options={{
           title: 'Створити публікацію',
+          unmountOnBlur: true,
           tabBarIcon: ({ focused, color }) => (
             <View style={[styles.wrap, focused && styles.wrapFocus]}>
               <Feather name="plus" size={25} color={color} />
@@ -68,20 +54,11 @@ export const HomeNavigation = () => {
               name="arrow-left"
               size={24}
               color={'rgba(33, 33, 33, 0.8)'}
-              onPress={() => {
-                navigation.navigate(lastScreen);
-              }}
+              onPress={() => navigation.goBack()}
             />
           ),
         }}
       />
-      {/* <HomeStack.Screen
-      name="CommentsScreen"
-      component={CommentsScreen}
-      options={{
-        title: 'Коментарі',
-      }}
-    /> */}
       <HomeStack.Screen
         name="ProfileScreen"
         component={ProfileScreen}
@@ -94,7 +71,6 @@ export const HomeNavigation = () => {
           ),
         }}
       />
-      {/* <HomeStack.Screen name="MapScreen" component={MapScreen} options={{ headerShown: false }} /> */}
     </HomeStack.Navigator>
   );
 };

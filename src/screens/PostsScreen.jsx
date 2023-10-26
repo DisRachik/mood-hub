@@ -1,9 +1,11 @@
 import { Image, StyleSheet, Text, View, FlatList } from 'react-native';
 import UserFoto from '../../assets/images.jpg';
-import { posts } from '../data/posts';
 import { Card } from '../components/Card';
+import { useCollection } from '../navigation/CollectionContext';
 
 export const PostsScreen = () => {
+  const { collection } = useCollection();
+
   return (
     <FlatList
       ListHeaderComponent={() => (
@@ -16,7 +18,7 @@ export const PostsScreen = () => {
         </View>
       )}
       style={styles.cardsWrap}
-      data={posts}
+      data={collection}
       keyExtractor={(item) => item.id}
       renderItem={({ item }) => <Card data={item} />}
       showsVerticalScrollIndicator={false}

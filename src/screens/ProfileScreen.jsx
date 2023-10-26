@@ -3,13 +3,14 @@ import { Card } from '../components/Card';
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { Title } from '../components/Title';
 import { UserFoto } from '../components/UserFoto';
-import { posts } from '../data/posts';
 import { useAuth } from '../navigation/AuthProvider';
+import { useCollection } from '../navigation/CollectionContext';
 
 const image = require('../../assets/photo-bg.png');
 
 export const ProfileScreen = () => {
   const { onAccess } = useAuth();
+  const { collection } = useCollection();
 
   const onLogOut = () => {
     onAccess();
@@ -27,7 +28,7 @@ export const ProfileScreen = () => {
             </View>
           )}
           style={styles.ItemsWrap}
-          data={posts}
+          data={collection}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => <Card data={item} likeCount />}
           showsVerticalScrollIndicator={false}
@@ -67,8 +68,4 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   ItemsWrap: { width: '100%' },
-  cardsWrap: {
-    paddingTop: 32,
-    marginBottom: 1,
-  },
 });

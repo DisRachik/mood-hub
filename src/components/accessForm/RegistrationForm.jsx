@@ -72,6 +72,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
               onFocus={() => {
                 setActiveInput('email');
               }}
+              keyboardType="email-address"
               onChangeText={onChange}
               value={value}
               placeholder="Адреса електронної пошти"
@@ -105,6 +106,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
               onFocus={() => {
                 setActiveInput('password');
               }}
+              autoCapitalize="none"
               onChangeText={(value) => onChange(value)}
               value={value}
               placeholder="Пароль"

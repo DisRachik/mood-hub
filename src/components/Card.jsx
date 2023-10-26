@@ -1,33 +1,48 @@
 import { useState } from 'react';
-import { StyleSheet, Image, Text, View } from 'react-native';
+import { StyleSheet, Image, Text, View, useWindowDimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { AuthScreenButton } from './buttons/AuthScreenButton';
+import { CustomButton } from './buttons/CustomButton';
+import { useNavigation } from '@react-navigation/native';
 
 export const Card = ({ data, likeCount }) => {
-  const { img, title, comment, region, country, rating } = data;
+  const { img, title, comment, region, country, rating, location, id } = data;
 
-  const [comments, setComments] = useState(comment.length);
+  const [comments] = useState(comment.length);
+  const navigation = useNavigation();
+
+  const { width } = useWindowDimensions();
+  const imgHeight = width * 0.7;
+
+  const createAddressText = () => (likeCount ? `${country}` : `${region}, ${country}`);
 
   return (
     <View style={styles.container}>
-      <Image source={img} style={styles.img} resizeMode="contain" />
+      <Image source={img} style={[styles.img, { height: imgHeight }]} resizeMode="contain" />
       <Text style={styles.title}>{title}</Text>
       <View style={styles.info}>
-        <View style={styles.wrap}>
+        <CustomButton
+          styleBtn={styles.wrap}
+          onPress={() => navigation.navigate('CommentsScreen', data)}
+        >
           <Feather name="message-circle" size={24} color={comments ? '#FF6C00' : '#BDBDBD'} />
           <Text style={styles.infoText}>{comment.length}</Text>
-        </View>
+        </CustomButton>
         {likeCount && (
           <View style={styles.wrap}>
             <Feather name="thumbs-up" size={24} color={rating ? '#FF6C00' : '#BDBDBD'} />
             <Text style={styles.infoText}>{rating}</Text>
           </View>
         )}
-        <View style={[styles.wrap, { marginLeft: 'auto' }]}>
+        <CustomButton
+          styleBtn={[styles.wrap, { marginLeft: 'auto' }]}
+          onPress={() => navigation.navigate('MapScreen', { ...location, title })}
+        >
           <Feather name="map-pin" size={24} color="#BDBDBD" />
           <Text style={[styles.infoText, { textDecorationLine: 'underline' }]}>
             {likeCount ? `${country}` : `${region}, ${country}`}
           </Text>
-        </View>
+        </CustomButton>
       </View>
     </View>
   );
@@ -41,7 +56,6 @@ const styles = StyleSheet.create({
   },
   img: {
     width: '100%',
-    height: 240,
     borderRadius: 8,
   },
   title: {
