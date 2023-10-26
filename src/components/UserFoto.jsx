@@ -1,21 +1,42 @@
 import { useState } from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, Keyboard, StyleSheet, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
+
 import { CustomButton } from './buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
 
 export const UserFoto = ({ toTop }) => {
   const [userPhoto, setUserPhoto] = useState(null);
 
+  const onPickImage = async () => {
+    if (userPhoto) {
+      setUserPhoto(null);
+      return;
+    }
+
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+        aspect: [1, 1],
+      });
+
+      if (!result.canceled) {
+        setUserPhoto(result.assets[0]);
+      } else {
+        alert('Ви не вибрали нове фото.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <View style={[styles.imgWrap, toTop && styles.imgWrapToTop]}>
-      <Image source={noNameFoto} style={styles.img} />
-      <CustomButton
-        onPress={() => {
-          Keyboard.dismiss();
-        }}
-        styleBtn={styles.iconBtn}
-      >
+      <Image source={userPhoto ? userPhoto : noNameFoto} style={styles.img} />
+      <CustomButton onPress={onPickImage} styleBtn={styles.iconBtn}>
         <AntDesign
           name="pluscircleo"
           size={25}
