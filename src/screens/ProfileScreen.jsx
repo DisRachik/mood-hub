@@ -1,19 +1,26 @@
+import { useDispatch } from 'react-redux';
+import { authSighOut } from '../redux/auth/authOperations';
+import { useAuth } from '../redux/auth/useAuth';
+
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
+
 import { Card } from '../components/Card';
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { Title } from '../components/Title';
 import { UserFoto } from '../components/UserFoto';
-import { useAuth } from '../navigation/AuthProvider';
 import { useCollection } from '../navigation/CollectionContext';
 
 const image = require('../../assets/photo-bg.png');
 
 export const ProfileScreen = () => {
-  const { onAccess } = useAuth();
+  const { user } = useAuth();
   const { collection } = useCollection();
 
+  const dispatch = useDispatch();
+
   const onLogOut = () => {
-    onAccess();
+    dispatch(authSighOut());
+    // onAccess();
   };
 
   return (
@@ -24,7 +31,7 @@ export const ProfileScreen = () => {
             <View style={styles.userWrap}>
               <UserFoto />
               <LogOutButton onPress={onLogOut} style={styles.btn} />
-              <Title text="Natali Romanova" />
+              <Title text={user.name} />
             </View>
           )}
           style={styles.ItemsWrap}

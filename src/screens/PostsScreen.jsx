@@ -2,8 +2,10 @@ import { Image, StyleSheet, Text, View, FlatList } from 'react-native';
 import UserFoto from '../../assets/images.jpg';
 import { Card } from '../components/Card';
 import { useCollection } from '../navigation/CollectionContext';
+import { useAuth } from '../redux/auth/useAuth';
 
 export const PostsScreen = () => {
+  const { user } = useAuth();
   const { collection } = useCollection();
 
   return (
@@ -12,8 +14,8 @@ export const PostsScreen = () => {
         <View style={styles.userWrap}>
           <Image source={UserFoto} style={styles.img} />
           <View style={styles.textWrap}>
-            <Text style={styles.userName}>Natali Romanova</Text>
-            <Text style={styles.userEmail}>email@example.com</Text>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
           </View>
         </View>
       )}

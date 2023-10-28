@@ -1,4 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 const HomeStack = createBottomTabNavigator();
 
@@ -11,14 +13,16 @@ import { CreatePostsScreen } from '../screens/CreatePostsScreen';
 
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { headerOptions } from './headerOptions';
-import { useAuth } from './AuthProvider';
+import { authSighOut } from '../redux/auth/authOperations';
 
 export const HomeNavigation = () => {
   const navigation = useNavigation();
-  const { onAccess } = useAuth();
+
+  const dispatch = useDispatch();
 
   const onLogOut = () => {
-    onAccess();
+    dispatch(authSighOut());
+    // onAccess();
   };
 
   return (

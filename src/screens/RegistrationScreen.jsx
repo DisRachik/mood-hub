@@ -19,6 +19,7 @@ const image = require('../../assets/photo-bg.png');
 
 export const RegistrationScreen = () => {
   const [keyboardOpen, setKeyboardOpen] = useState(true);
+  const [userPhoto, setUserPhoto] = useState(null);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -46,10 +47,10 @@ export const RegistrationScreen = () => {
               keyboardVerticalOffset={0}
               style={styles.wrapKeyboard}
             >
-              <UserFoto toTop />
+              <UserFoto toTop userPhoto={userPhoto} setUserPhoto={setUserPhoto} />
               <Title text="Реєстрація" />
 
-              <RegistrationForm keyboardOpen={keyboardOpen} />
+              <RegistrationForm keyboardOpen={keyboardOpen} userPhoto={userPhoto} />
               {keyboardOpen && (
                 <AuthScreenButton
                   text="Вже є акаунт? "

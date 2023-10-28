@@ -4,8 +4,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { useFonts } from 'expo-font';
 
-import { AuthProvider } from './src/navigation/AuthProvider';
 import { Main } from './src/navigation/Main';
+import { Provider } from 'react-redux';
+import { store } from './src/redux/store';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -19,11 +20,11 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
+    <Provider store={store}>
       <NavigationContainer>
         <Main />
         <StatusBar style="auto" />
       </NavigationContainer>
-    </AuthProvider>
+    </Provider>
   );
 }

@@ -1,14 +1,11 @@
-import { useState } from 'react';
-import { Image, Keyboard, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AntDesign } from '@expo/vector-icons';
 
 import { CustomButton } from './buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
 
-export const UserFoto = ({ toTop }) => {
-  const [userPhoto, setUserPhoto] = useState(null);
-
+export const UserFoto = ({ toTop, userPhoto, setUserPhoto }) => {
   const onPickImage = async () => {
     if (userPhoto) {
       setUserPhoto(null);
