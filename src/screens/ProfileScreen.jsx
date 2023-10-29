@@ -1,5 +1,3 @@
-import { useDispatch } from 'react-redux';
-import { authSighOut } from '../redux/auth/authOperations';
 import { useAuth } from '../redux/auth/useAuth';
 
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
@@ -13,14 +11,11 @@ import { useCollection } from '../navigation/CollectionContext';
 const image = require('../../assets/photo-bg.png');
 
 export const ProfileScreen = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { collection } = useCollection();
 
-  const dispatch = useDispatch();
-
   const onLogOut = () => {
-    dispatch(authSighOut());
-    // onAccess();
+    signOut();
   };
 
   return (

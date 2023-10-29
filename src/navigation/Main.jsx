@@ -4,17 +4,20 @@ import { useAuth } from '../redux/auth/useAuth';
 import { AuthNavigation } from './AuthNavigation';
 import { CollectionProvider } from './CollectionContext';
 import { MainNavigation } from './MainNavigation';
+import { useEffect } from 'react';
 
 export const Main = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, checkUser } = useAuth();
 
-  const isSignedIn = user.email;
+  useEffect(() => {
+    checkUser();
+  }, []);
 
   console.log('MAINuserSTATE', user);
 
   return (
     <>
-      {!isSignedIn ? (
+      {!user.email ? (
         <AuthNavigation />
       ) : (
         <CollectionProvider>

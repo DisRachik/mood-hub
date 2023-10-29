@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import {
   createUserWithEmailAndPassword,
+  onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
   updateProfile,
@@ -10,7 +11,7 @@ import { auth } from '../../firebase/config';
 
 export const authSighUp = createAsyncThunk(
   'auth/signUp',
-  async ({ mail, password, login, userPhoto }) => {
+  async ({ mail, password, login, userPhoto }, thunkAPI) => {
     // console.log('userPhoto', userPhoto);
     try {
       await createUserWithEmailAndPassword(auth, mail, password);
@@ -39,9 +40,32 @@ export const authSighIn = createAsyncThunk('auth/signIn', async ({ mail, passwor
   }
 });
 
-export const authSighOut = createAsyncThunk('auth/SignOut', async () => {
+export const authSighOut = createAsyncThunk('auth/SignOut', async (_, thunkAPI) => {
   try {
     await signOut(auth);
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.message);
+  }
+});
+
+export const checkAuth = createAsyncThunk('auth/checkAuth', async (_, thunkAPI) => {
+  try {
+    return new Promise((resolve, reject) => {
+      onAuthStateChanged(
+        auth,
+        async (user) => {
+          if (user) {
+            const { displayName, uid, photoURL, email } = user;
+            resolve({ displayName, uid, photoURL, email });
+          } else {
+            resolve({ displayName: null, uid: null, photoURL: null, email: null });
+          }
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
   }
