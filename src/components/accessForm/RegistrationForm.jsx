@@ -5,6 +5,7 @@ import { useAuth } from '../../redux/auth/useAuth';
 
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { CustomButton } from '../buttons/CustomButton';
+import { uploadAvatarToServer } from '../../firebase/uploadAvatarToServer';
 
 export const RegistrationForm = ({ keyboardOpen, userPhoto }) => {
   const { sighUp } = useAuth();
@@ -26,8 +27,9 @@ export const RegistrationForm = ({ keyboardOpen, userPhoto }) => {
     },
   });
 
-  const onSubmit = (data) => {
-    sighUp({ ...data, userPhoto })
+  const onSubmit = async (data) => {
+    const avatarURL = await uploadAvatarToServer('avatars/', userPhoto);
+    sighUp({ ...data, avatarURL })
       .then(() => {
         reset();
       })

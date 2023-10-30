@@ -6,16 +6,19 @@ import { useAuth } from '../redux/auth/useAuth';
 
 export const PostsScreen = () => {
   const { user } = useAuth();
+  const { avatar, email, name, userId } = user;
+  const ownUserFoto = { uri: avatar };
+
   const { collection } = useCollection();
 
   return (
     <FlatList
       ListHeaderComponent={() => (
         <View style={styles.userWrap}>
-          <Image source={UserFoto} style={styles.img} />
+          <Image source={avatar ? ownUserFoto : UserFoto} style={styles.img} />
           <View style={styles.textWrap}>
-            <Text style={styles.userName}>{user.name}</Text>
-            <Text style={styles.userEmail}>{user.email}</Text>
+            <Text style={styles.userName}>{name}</Text>
+            <Text style={styles.userEmail}>{email}</Text>
           </View>
         </View>
       )}

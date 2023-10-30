@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { authSighIn, authSighOut, authSighUp, checkAuth } from './authOperations';
+import { authSighIn, authSighOut, authSighUp, checkAuth, updateUserFoto } from './authOperations';
 
 const initialState = {
   user: { userId: null, name: null, email: null, avatar: null },
   isLoading: false,
-  isRefreshing: false,
+  isUpdateComponent: false,
 };
 
 export const authSlice = createSlice({
@@ -47,5 +47,16 @@ export const authSlice = createSlice({
       })
       .addCase(checkAuth.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(updateUserFoto.pending, (state) => {
+        state.isUpdateComponent = true;
+      })
+      .addCase(updateUserFoto.fulfilled, (state, action) => {
+        console.log('action.payload', action.payload);
+        state.user.avatar = action.payload;
+        state.isUpdateComponent = false;
+      })
+      .addCase(updateUserFoto.rejected, (state) => {
+        state.isUpdateComponent = false;
       }),
 });

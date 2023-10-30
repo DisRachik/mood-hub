@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 
+import { useAuth } from '../redux/auth/useAuth';
+
 import { FontAwesome } from '@expo/vector-icons';
 import {
   Image,
@@ -21,7 +23,12 @@ export const CommentsScreen = () => {
   const { params } = useRoute();
   const { img, comment, id } = params;
 
+  const { user } = useAuth();
+  const { avatar } = user;
+  const ownUserFoto = { uri: avatar };
+
   const { addComment } = useCollection();
+
   const [inputState, setInputState] = useState('');
   const [activeInput, setActiveInput] = useState(false);
   const [isSubmit, setIsSubmit] = useState(null);
@@ -64,7 +71,7 @@ export const CommentsScreen = () => {
                 {!isMyPost ? (
                   <FontAwesome name="user-secret" size={28} color="#212121" />
                 ) : (
-                  <Image source={noNameFoto} style={styles.imgNoname} />
+                  <Image source={avatar ? ownUserFoto : noNameFoto} style={styles.imgNoname} />
                 )}
                 <Text style={styles.text}>{text}</Text>
               </View>

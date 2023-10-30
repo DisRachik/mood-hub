@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+
 import { useAuth } from '../redux/auth/useAuth';
 
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
@@ -6,13 +8,30 @@ import { Card } from '../components/Card';
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { Title } from '../components/Title';
 import { UserFoto } from '../components/UserFoto';
-import { useCollection } from '../navigation/CollectionContext';
-
 const image = require('../../assets/photo-bg.png');
 
+import { useCollection } from '../navigation/CollectionContext';
+import { uploadAvatarToServer } from '../firebase/uploadAvatarToServer';
+
 export const ProfileScreen = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, updateAvatar } = useAuth();
+  const [userPhoto, setUserPhoto] = useState(null);
   const { collection } = useCollection();
+
+  useEffect(() => {
+    user.avatar && setUserPhoto({ uri: user.avatar });
+  }, [user]);
+
+  useEffect(() => {
+    const uploadAvatar = async () => {
+      if (!user.avatar && userPhoto) {
+        const avatarURL = await uploadAvatarToServer('avatars/', userPhoto);
+        updateAvatar({ avatarURL: avatarURL });
+      }
+    };
+
+    uploadAvatar();
+  }, [userPhoto]);
 
   const onLogOut = () => {
     signOut();
@@ -24,7 +43,7 @@ export const ProfileScreen = () => {
         <FlatList
           ListHeaderComponent={() => (
             <View style={styles.userWrap}>
-              <UserFoto />
+              <UserFoto userPhoto={userPhoto} setUserPhoto={setUserPhoto} />
               <LogOutButton onPress={onLogOut} style={styles.btn} />
               <Title text={user.name} />
             </View>

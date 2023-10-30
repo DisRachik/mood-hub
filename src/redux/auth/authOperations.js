@@ -9,16 +9,32 @@ import {
 } from 'firebase/auth';
 import { auth } from '../../firebase/config';
 
+export const updateUserFoto = createAsyncThunk(
+  'auth/updateFoto',
+  async ({ avatarURL }, thunkAPI) => {
+    try {
+      const res = await updateProfile(auth.currentUser, {
+        photoURL: avatarURL,
+      });
+
+      console.log('res', res);
+      const { photoURL } = auth.currentUser;
+      return photoURL;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.message);
+    }
+  }
+);
+
 export const authSighUp = createAsyncThunk(
   'auth/signUp',
-  async ({ mail, password, login, userPhoto }, thunkAPI) => {
-    // console.log('userPhoto', userPhoto);
+  async ({ mail, password, login, avatarURL }, thunkAPI) => {
     try {
       await createUserWithEmailAndPassword(auth, mail, password);
 
       await updateProfile(auth.currentUser, {
         displayName: login,
-        // photoURL: userPhoto,
+        photoURL: avatarURL,
       });
       const { displayName, uid, photoURL, email } = auth.currentUser;
 

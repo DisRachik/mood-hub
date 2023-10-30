@@ -1,14 +1,45 @@
-import { Image, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign } from '@expo/vector-icons';
 
+import { useAuth } from '../redux/auth/useAuth';
+
+import { AntDesign } from '@expo/vector-icons';
 import { CustomButton } from './buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
 
+const actionConfirmation = async (deletePhoto, setUserPhoto) => {
+  Alert.alert(
+    'Видалити фото?',
+    'Ви впевнені, що хочете видалити це фото з профілю?',
+    [
+      {
+        text: 'Відміна',
+        style: 'cancel',
+      },
+      {
+        text: 'Видалити',
+        style: 'destructive',
+        onPress: async () => {
+          await deletePhoto({ avatarURL: '' });
+          setUserPhoto(null);
+        },
+      },
+    ],
+    {
+      cancelable: false,
+    }
+  );
+};
+
 export const UserFoto = ({ toTop, userPhoto, setUserPhoto }) => {
+  const { user, updateAvatar, isUpdateComponent } = useAuth();
   const onPickImage = async () => {
     if (userPhoto) {
-      setUserPhoto(null);
+      if (user.avatar) {
+        await actionConfirmation(updateAvatar, setUserPhoto);
+      } else {
+        setUserPhoto(null);
+      }
       return;
     }
 
@@ -32,20 +63,28 @@ export const UserFoto = ({ toTop, userPhoto, setUserPhoto }) => {
 
   return (
     <View style={[styles.imgWrap, toTop && styles.imgWrapToTop]}>
-      <Image source={userPhoto ? userPhoto : noNameFoto} style={styles.img} />
-      <CustomButton onPress={onPickImage} styleBtn={styles.iconBtn}>
-        <AntDesign
-          name="pluscircleo"
-          size={25}
-          style={userPhoto ? styles.iconActive : styles.icon}
-        />
-      </CustomButton>
+      {isUpdateComponent ? (
+        <ActivityIndicator size="large" color="#FF6C00" />
+      ) : (
+        <>
+          <Image source={userPhoto ? userPhoto : noNameFoto} style={styles.img} />
+          <CustomButton onPress={onPickImage} styleBtn={styles.iconBtn}>
+            <AntDesign
+              name="pluscircleo"
+              size={25}
+              style={userPhoto ? styles.iconActive : styles.icon}
+            />
+          </CustomButton>
+        </>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   imgWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 120,
     height: 120,
     position: 'absolute',
