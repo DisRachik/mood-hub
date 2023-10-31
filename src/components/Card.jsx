@@ -6,9 +6,8 @@ import { CustomButton } from './buttons/CustomButton';
 import { useNavigation } from '@react-navigation/native';
 
 export const Card = ({ data, likeCount }) => {
-  const { img, title, comment, region, country, rating, location, id } = data;
+  const { img, title, commentsCounter, region, country, rating, location, postId } = data;
 
-  const [comments] = useState(comment.length);
   const navigation = useNavigation();
 
   const { width } = useWindowDimensions();
@@ -18,15 +17,28 @@ export const Card = ({ data, likeCount }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: img }} style={[styles.img, { height: imgHeight }]} resizeMode="cover" />
+      <CustomButton
+        styleBtn={styles.imgWrap}
+        onPress={() => navigation.navigate('CommentsScreen', { postId })}
+      >
+        <Image
+          source={{ uri: img }}
+          style={[styles.img, { height: imgHeight }]}
+          resizeMode="cover"
+        />
+      </CustomButton>
       <Text style={styles.title}>{title}</Text>
       <View style={styles.info}>
         <CustomButton
           styleBtn={styles.wrap}
           onPress={() => navigation.navigate('CommentsScreen', data)}
         >
-          <Feather name="message-circle" size={24} color={comments ? '#FF6C00' : '#BDBDBD'} />
-          <Text style={styles.infoText}>{comment.length}</Text>
+          <Feather
+            name="message-circle"
+            size={24}
+            color={commentsCounter ? '#FF6C00' : '#BDBDBD'}
+          />
+          <Text style={styles.infoText}>{commentsCounter}</Text>
         </CustomButton>
         {likeCount && (
           <View style={styles.wrap}>
@@ -54,6 +66,7 @@ const styles = StyleSheet.create({
     paddingBottom: 34,
     paddingHorizontal: 16,
   },
+  imgWrap: { width: '100%' },
   img: {
     width: '100%',
     borderRadius: 8,

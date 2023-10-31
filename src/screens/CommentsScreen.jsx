@@ -2,6 +2,11 @@ import { useEffect, useState } from 'react';
 import { useRoute } from '@react-navigation/native';
 
 import { useAuth } from '../redux/auth/useAuth';
+import {
+  getCommentsForPost,
+  getOnePost,
+  sendCommentToServer,
+} from '../firebase/dataPostWithServer';
 
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -13,21 +18,20 @@ import {
   Text,
   TextInput,
   Keyboard,
+  ActivityIndicator,
 } from 'react-native';
 
 import { CustomButton } from '../components/buttons/CustomButton';
-import { useCollection } from '../navigation/CollectionContext';
 import noNameFoto from '../../assets/images.jpg';
 
 export const CommentsScreen = () => {
   const { params } = useRoute();
-  const { img, comment, id } = params;
-
   const { user } = useAuth();
-  const { avatar } = user;
+  const { userId, avatar } = user;
   const ownUserFoto = { uri: avatar };
 
-  const { addComment } = useCollection();
+  const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
 
   const [inputState, setInputState] = useState('');
   const [activeInput, setActiveInput] = useState(false);
@@ -37,34 +41,45 @@ export const CommentsScreen = () => {
   const imgHeight = width * 0.7;
 
   useEffect(() => {
+    (async () => await getOnePost(setPost, params.postId))();
+  }, []);
+
+  useEffect(() => {
+    (async () => await getCommentsForPost(setComments, params.postId))();
+  }, []);
+
+  useEffect(() => {
     setIsSubmit(Boolean(inputState.trim()));
   }, [inputState]);
 
   const onSubmit = async () => {
-    try {
-      addComment({
-        newComment: inputState,
-        idPost: id,
-        idUser: 'I`m',
-      });
+    sendCommentToServer({
+      newComment: inputState,
+      postId: params.postId,
+      userId,
+      commentsCounter: post.commentsCounter,
+    });
 
-      setInputState('');
-      Keyboard.dismiss();
-    } catch (error) {
-      console.error(error);
-    }
+    setInputState('');
+    Keyboard.dismiss();
   };
 
   return (
     <View style={styles.container}>
-      <Image source={img} style={[styles.img, { height: imgHeight }]} resizeMode="contain" />
+      <View style={[styles.imgWrap, { height: imgHeight }]}>
+        {post ? (
+          <Image source={{ uri: post.img }} style={[styles.img]} resizeMode="cover" />
+        ) : (
+          <ActivityIndicator size="large" color="#FF6C00" />
+        )}
+      </View>
 
       <FlatList
-        data={comment}
-        keyExtractor={(item) => item.id}
+        data={comments}
+        keyExtractor={(item) => item.commentId}
         renderItem={({ item }) => {
-          const { user, date, text } = item;
-          const isMyPost = user === 'I`m';
+          const { own, postDate, text } = item;
+          const isMyPost = userId === own;
           return (
             <View style={styles.commentWrap}>
               <View style={[styles.comment, isMyPost && { flexDirection: 'row-reverse' }]}>
@@ -75,7 +90,7 @@ export const CommentsScreen = () => {
                 )}
                 <Text style={styles.text}>{text}</Text>
               </View>
-              <Text style={[styles.data, !isMyPost && { textAlign: 'right' }]}>{date}</Text>
+              <Text style={[styles.data, !isMyPost && { textAlign: 'right' }]}>{postDate}</Text>
             </View>
           );
         }}
@@ -120,8 +135,10 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     paddingHorizontal: 16,
   },
+  imgWrap: { width: '100%' },
   img: {
     width: '100%',
+    height: '100%',
     borderRadius: 8,
   },
 

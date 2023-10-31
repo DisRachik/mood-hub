@@ -20,7 +20,7 @@ export const ProfileScreen = () => {
   const [collection, setCollection] = useState([]);
 
   useEffect(() => {
-    getOwnPost(setCollection, (userId = user.userId));
+    getOwnPost(setCollection, user.userId);
   }, []);
 
   useEffect(() => {

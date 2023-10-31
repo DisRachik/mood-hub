@@ -13,8 +13,8 @@ export const MapScreen = () => {
       region={{
         latitude,
         longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
+        latitudeDelta: 0.02,
+        longitudeDelta: 0.006,
       }}
       mapType="standard"
     >

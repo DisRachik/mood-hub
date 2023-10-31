@@ -1,10 +1,11 @@
-import { ActivityIndicator, Modal, StyleSheet, View } from 'react-native';
+import { useEffect } from 'react';
+
 import { useAuth } from '../redux/auth/useAuth';
 
 import { AuthNavigation } from './AuthNavigation';
-import { CollectionProvider } from './CollectionContext';
 import { MainNavigation } from './MainNavigation';
-import { useEffect } from 'react';
+
+import { ActivityIndicator, Modal, StyleSheet, View } from 'react-native';
 
 export const Main = () => {
   const { user, isLoading, checkUser } = useAuth();
@@ -13,17 +14,9 @@ export const Main = () => {
     checkUser();
   }, []);
 
-  console.log('MAINuserSTATE', user);
-
   return (
     <>
-      {!user.email ? (
-        <AuthNavigation />
-      ) : (
-        <CollectionProvider>
-          <MainNavigation />
-        </CollectionProvider>
-      )}
+      {!user.email ? <AuthNavigation /> : <MainNavigation />}
       <Modal
         animationType="fade"
         transparent={true}
