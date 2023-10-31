@@ -5,19 +5,23 @@ import { useAuth } from '../redux/auth/useAuth';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
 
+import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
+import { getOwnPost } from '../firebase/dataPostWithServer';
+
 import { Card } from '../components/Card';
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { Title } from '../components/Title';
 import { UserFoto } from '../components/UserFoto';
 const image = require('../../assets/photo-bg.png');
 
-import { useCollection } from '../navigation/CollectionContext';
-import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
-
 export const ProfileScreen = () => {
   const { user, signOut, updateAvatar } = useAuth();
   const [userPhoto, setUserPhoto] = useState(null);
-  const { collection } = useCollection();
+  const [collection, setCollection] = useState([]);
+
+  useEffect(() => {
+    getOwnPost(setCollection, (userId = user.userId));
+  }, []);
 
   useEffect(() => {
     user.avatar && setUserPhoto({ uri: user.avatar });
@@ -49,7 +53,7 @@ export const ProfileScreen = () => {
           )}
           style={styles.ItemsWrap}
           data={collection}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.postId}
           renderItem={({ item }) => <Card data={item} likeCount />}
           showsVerticalScrollIndicator={false}
         />

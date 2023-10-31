@@ -13,6 +13,7 @@ export const PostsScreen = () => {
   const ownUserFoto = { uri: avatar };
 
   const [collection, setCollection] = useState([]);
+
   useEffect(() => {
     getAllPosts(setCollection);
   }, []);
