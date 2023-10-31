@@ -18,7 +18,7 @@ export const Card = ({ data, likeCount }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={img} style={[styles.img, { height: imgHeight }]} resizeMode="contain" />
+      <Image source={{ uri: img }} style={[styles.img, { height: imgHeight }]} resizeMode="cover" />
       <Text style={styles.title}>{title}</Text>
       <View style={styles.info}>
         <CustomButton

@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../redux/auth/useAuth';
 
 import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
-import { uploadPostToServer } from '../firebase/dataPostToServer';
+import { uploadPostToServer } from '../firebase/dataPostWithServer';
 
 import {
   StyleSheet,
@@ -21,8 +21,6 @@ import { Feather } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
 import { FotoCamera } from '../components/FotoCamera';
 
-import { useCollection } from '../navigation/CollectionContext';
-
 const initialFormState = {
   image: '',
   title: '',
@@ -31,7 +29,6 @@ const initialFormState = {
 };
 
 export const CreatePostsScreen = () => {
-  const { addPost } = useCollection();
   const { user } = useAuth();
   const navigation = useNavigation();
 
@@ -42,17 +39,6 @@ export const CreatePostsScreen = () => {
   useEffect(() => {
     setError(null);
   }, [formState.place]);
-
-  // const addNewFoto = async (data) => {
-  //   try {
-  //     await addPost(data);
-
-  //     navigation.navigate('PostsScreen');
-  //     setFormState(initialFormState);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
 
   const onSubmit = async () => {
     const { image, title, location, place } = formState;
@@ -74,13 +60,9 @@ export const CreatePostsScreen = () => {
       location,
       region,
       country,
-      // comment: [],
-      // rating: 0,
-      // id: Date.now().toString(),
     };
 
     await uploadPostToServer(formData);
-    // addNewFoto(formData);
     navigation.navigate('PostsScreen');
     setFormState(initialFormState);
   };

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import { useAuth } from '../redux/auth/useAuth';
 
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
 
 import { Card } from '../components/Card';
@@ -37,7 +38,7 @@ export const ProfileScreen = () => {
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <FlatList
           ListHeaderComponent={() => (
             <View style={styles.userWrap}>
@@ -52,7 +53,7 @@ export const ProfileScreen = () => {
           renderItem={({ item }) => <Card data={item} likeCount />}
           showsVerticalScrollIndicator={false}
         />
-      </View>
+      </SafeAreaView>
     </ImageBackground>
   );
 };

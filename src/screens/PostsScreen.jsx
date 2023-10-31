@@ -1,15 +1,21 @@
-import { Image, StyleSheet, Text, View, FlatList } from 'react-native';
-import UserFoto from '../../assets/images.jpg';
-import { Card } from '../components/Card';
-import { useCollection } from '../navigation/CollectionContext';
+import { useEffect, useState } from 'react';
+
 import { useAuth } from '../redux/auth/useAuth';
+import { getAllPosts } from '../firebase/dataPostWithServer';
+
+import { Image, StyleSheet, Text, View, FlatList } from 'react-native';
+import { Card } from '../components/Card';
+import UserFoto from '../../assets/images.jpg';
 
 export const PostsScreen = () => {
   const { user } = useAuth();
   const { avatar, email, name, userId } = user;
   const ownUserFoto = { uri: avatar };
 
-  const { collection } = useCollection();
+  const [collection, setCollection] = useState([]);
+  useEffect(() => {
+    getAllPosts(setCollection);
+  }, []);
 
   return (
     <FlatList
@@ -24,7 +30,7 @@ export const PostsScreen = () => {
       )}
       style={styles.cardsWrap}
       data={collection}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item.postId}
       renderItem={({ item }) => <Card data={item} />}
       showsVerticalScrollIndicator={false}
     />
