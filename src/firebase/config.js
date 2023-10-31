@@ -8,6 +8,7 @@ import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 const firebaseConfig = {
   apiKey: 'AIzaSyAeGML4H6yEhT1OlRCdbEjsDKMQgp4Qozk',
   authDomain: 'mood-hub-6b6f5.firebaseapp.com',
+  databaseURL: 'https://mood-hub-6b6f5-default-rtdb.europe-west1.firebasedatabase.app',
   projectId: 'mood-hub-6b6f5',
   storageBucket: 'mood-hub-6b6f5.appspot.com',
   messagingSenderId: '1057051606086',

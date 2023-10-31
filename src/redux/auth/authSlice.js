@@ -52,7 +52,6 @@ export const authSlice = createSlice({
         state.isUpdateComponent = true;
       })
       .addCase(updateUserFoto.fulfilled, (state, action) => {
-        console.log('action.payload', action.payload);
         state.user.avatar = action.payload;
         state.isUpdateComponent = false;
       })

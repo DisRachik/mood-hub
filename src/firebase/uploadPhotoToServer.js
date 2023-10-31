@@ -1,7 +1,7 @@
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from './config';
 
-export const uploadAvatarToServer = async (folder, avatar) => {
+export const uploadPhotoToServer = async (folder, avatar) => {
   if (avatar) {
     const res = await fetch(avatar.uri);
     const file = await res.blob();

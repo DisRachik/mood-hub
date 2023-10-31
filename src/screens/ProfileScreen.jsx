@@ -11,7 +11,7 @@ import { UserFoto } from '../components/UserFoto';
 const image = require('../../assets/photo-bg.png');
 
 import { useCollection } from '../navigation/CollectionContext';
-import { uploadAvatarToServer } from '../firebase/uploadAvatarToServer';
+import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
 
 export const ProfileScreen = () => {
   const { user, signOut, updateAvatar } = useAuth();
@@ -23,14 +23,12 @@ export const ProfileScreen = () => {
   }, [user]);
 
   useEffect(() => {
-    const uploadAvatar = async () => {
+    (async () => {
       if (!user.avatar && userPhoto) {
-        const avatarURL = await uploadAvatarToServer('avatars/', userPhoto);
+        const avatarURL = await uploadPhotoToServer('avatars/', userPhoto);
         updateAvatar({ avatarURL: avatarURL });
       }
-    };
-
-    uploadAvatar();
+    })();
   }, [userPhoto]);
 
   const onLogOut = () => {

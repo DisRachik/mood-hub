@@ -13,11 +13,10 @@ export const updateUserFoto = createAsyncThunk(
   'auth/updateFoto',
   async ({ avatarURL }, thunkAPI) => {
     try {
-      const res = await updateProfile(auth.currentUser, {
+      await updateProfile(auth.currentUser, {
         photoURL: avatarURL,
       });
 
-      console.log('res', res);
       const { photoURL } = auth.currentUser;
       return photoURL;
     } catch (error) {

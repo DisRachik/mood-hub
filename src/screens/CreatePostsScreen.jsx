@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+import { useAuth } from '../redux/auth/useAuth';
+
+import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
+import { uploadPostToServer } from '../firebase/dataPostToServer';
 
 import {
   StyleSheet,
@@ -14,8 +20,8 @@ import {
 import { Feather } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
 import { FotoCamera } from '../components/FotoCamera';
+
 import { useCollection } from '../navigation/CollectionContext';
-import { useNavigation } from '@react-navigation/native';
 
 const initialFormState = {
   image: '',
@@ -26,6 +32,7 @@ const initialFormState = {
 
 export const CreatePostsScreen = () => {
   const { addPost } = useCollection();
+  const { user } = useAuth();
   const navigation = useNavigation();
 
   const [formState, setFormState] = useState(initialFormState);
@@ -36,18 +43,18 @@ export const CreatePostsScreen = () => {
     setError(null);
   }, [formState.place]);
 
-  const addNewFoto = async (data) => {
-    try {
-      await addPost(data);
+  // const addNewFoto = async (data) => {
+  //   try {
+  //     await addPost(data);
 
-      navigation.navigate('PostsScreen');
-      setFormState(initialFormState);
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  //     navigation.navigate('PostsScreen');
+  //     setFormState(initialFormState);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const { image, title, location, place } = formState;
 
     const partsAddress = place.split(',');
@@ -56,19 +63,26 @@ export const CreatePostsScreen = () => {
       return;
     }
 
+    const newPhotoURL = await uploadPhotoToServer('postPhoto/', image);
+
     const region = partsAddress[0].trim();
     const country = partsAddress[1].trim();
     const formData = {
-      img: image,
+      userId: user.userId,
+      img: newPhotoURL,
       title,
       location,
       region,
       country,
-      comment: [],
-      rating: 0,
-      id: Date.now().toString(),
+      // comment: [],
+      // rating: 0,
+      // id: Date.now().toString(),
     };
-    addNewFoto(formData);
+
+    await uploadPostToServer(formData);
+    // addNewFoto(formData);
+    navigation.navigate('PostsScreen');
+    setFormState(initialFormState);
   };
 
   const onClearForm = () => setFormState(initialFormState);
