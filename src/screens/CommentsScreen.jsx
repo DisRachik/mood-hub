@@ -27,7 +27,7 @@ import noNameFoto from '../../assets/images.jpg';
 export const CommentsScreen = () => {
   const { params } = useRoute();
   const { user } = useAuth();
-  const { userId, avatar } = user;
+  const { userId, avatar, name } = user;
   const ownUserFoto = { uri: avatar };
 
   const [post, setPost] = useState(null);
@@ -57,6 +57,8 @@ export const CommentsScreen = () => {
       newComment: inputState,
       postId: params.postId,
       userId,
+      avatar,
+      name,
       commentsCounter: post.commentsCounter,
     });
 
@@ -78,13 +80,20 @@ export const CommentsScreen = () => {
         data={comments}
         keyExtractor={(item) => item.commentId}
         renderItem={({ item }) => {
-          const { own, postDate, text } = item;
+          const { own, ownAvatar, postDate, text } = item;
           const isMyPost = userId === own;
+
           return (
             <View style={styles.commentWrap}>
               <View style={[styles.comment, isMyPost && { flexDirection: 'row-reverse' }]}>
                 {!isMyPost ? (
-                  <FontAwesome name="user-secret" size={28} color="#212121" />
+                  <>
+                    {ownAvatar ? (
+                      <Image source={{ uri: ownAvatar }} style={styles.imgNoname} />
+                    ) : (
+                      <FontAwesome name="user-secret" size={28} color="#212121" />
+                    )}
+                  </>
                 ) : (
                   <Image source={avatar ? ownUserFoto : noNameFoto} style={styles.imgNoname} />
                 )}

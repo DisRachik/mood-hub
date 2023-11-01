@@ -8,6 +8,7 @@ import {
   updateProfile,
 } from 'firebase/auth';
 import { auth } from '../../firebase/config';
+import { stopAllListeners } from '../../firebase/dataPostWithServer';
 
 export const updateUserFoto = createAsyncThunk(
   'auth/updateFoto',
@@ -57,6 +58,7 @@ export const authSighIn = createAsyncThunk('auth/signIn', async ({ mail, passwor
 
 export const authSighOut = createAsyncThunk('auth/SignOut', async (_, thunkAPI) => {
   try {
+    await stopAllListeners();
     await signOut(auth);
   } catch (error) {
     return thunkAPI.rejectWithValue(error.message);
