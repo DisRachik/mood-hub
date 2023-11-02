@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../redux/auth/useAuth';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FlatList, ImageBackground, StyleSheet, Text, View } from 'react-native';
 
 import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
 import { getOwnPost } from '../firebase/dataPostWithServer';
@@ -43,20 +44,38 @@ export const ProfileScreen = () => {
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
       <SafeAreaView style={styles.container}>
-        <FlatList
-          ListHeaderComponent={() => (
-            <View style={styles.userWrap}>
-              <UserFoto userPhoto={userPhoto} setUserPhoto={setUserPhoto} />
-              <LogOutButton onPress={onLogOut} style={styles.btn} />
-              <Title text={user.name} />
-            </View>
-          )}
-          style={styles.ItemsWrap}
-          data={collection}
-          keyExtractor={(item) => item.postId}
-          renderItem={({ item }) => <Card data={item} likeCount />}
-          showsVerticalScrollIndicator={false}
-        />
+        <LinearGradient
+          colors={['rgba(0,0,0,0.0)', '#fff']}
+          locations={[0.3, 0.3]}
+          style={styles.gradient}
+        >
+          <FlatList
+            ListHeaderComponent={() => (
+              <View style={styles.userWrap}>
+                <UserFoto userPhoto={userPhoto} setUserPhoto={setUserPhoto} />
+                <LogOutButton onPress={onLogOut} style={styles.btn} />
+                <Title text={user.name} />
+              </View>
+            )}
+            style={styles.ItemsWrap}
+            data={collection}
+            keyExtractor={(item) => item.postId}
+            renderItem={({ item }) => <Card data={item} likeCount />}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <View
+                style={{
+                  height: '100%',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: 'tomato',
+                }}
+              >
+                <Text style={{ color: 'red' }}>test</Text>
+              </View>
+            }
+          />
+        </LinearGradient>
       </SafeAreaView>
     </ImageBackground>
   );
@@ -65,6 +84,14 @@ export const ProfileScreen = () => {
 const styles = StyleSheet.create({
   imageBg: {
     flex: 1,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  gradient: {
+    flex: 1,
+    width: '100%',
   },
   userWrap: {
     marginTop: 119,
@@ -77,10 +104,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
+
   btn: {
     position: 'absolute',
     top: -22,
@@ -91,5 +115,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 16,
   },
-  ItemsWrap: { width: '100%' },
+  ItemsWrap: {
+    width: '100%',
+  },
 });
