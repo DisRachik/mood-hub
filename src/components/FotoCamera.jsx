@@ -27,7 +27,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
         setPermission(status === 'granted');
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     })();
   }, []);
@@ -37,10 +37,10 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          console.error('У доступі до місцезнаходження відмовлено');
+          alert('У доступі до місцезнаходження відмовлено');
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     })();
   }, []);
@@ -61,7 +61,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
           location,
         }));
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     })();
   }, [location]);
@@ -77,7 +77,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
         setLocation('');
         onClearForm();
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
       return;
     }
@@ -92,7 +92,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
           image: asset,
         }));
       } catch (error) {
-        console.error(error);
+        console.log(error);
       } finally {
         setIsLoading('fulfilled');
       }
@@ -105,7 +105,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
         };
         setLocation(coords);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     }
   };

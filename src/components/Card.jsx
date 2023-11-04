@@ -10,11 +10,9 @@ import { CustomButton } from './buttons/CustomButton';
 
 export const Card = ({ data }) => {
   const { img, title, commentsCounter, region, country, location, postId, currentLikes } = data;
-  console.log('data', currentLikes);
 
   const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(currentLikes.includes(user.userId));
-  console.log('isLiked', isLiked);
 
   useEffect(() => {
     setIsLiked(currentLikes.includes(user.userId));

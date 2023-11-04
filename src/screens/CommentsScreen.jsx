@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { useAuth } from '../redux/auth/useAuth';
 import {
+  deletePost,
   getCommentsForPost,
   getOnePost,
   sendCommentToServer,
@@ -19,12 +20,38 @@ import {
   TextInput,
   Keyboard,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { CustomButton } from '../components/buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
 
+const actionConfirmation = async (deletePhotoFromUser, postId, navigation) => {
+  Alert.alert(
+    'Видалити фото?',
+    'Ви впевнені, що хочете видалити це фото з профілю?',
+    [
+      {
+        text: 'Відміна',
+        style: 'cancel',
+      },
+      {
+        text: 'Видалити',
+        style: 'destructive',
+        onPress: async () => {
+          await deletePhotoFromUser(postId);
+          navigation.goBack();
+        },
+      },
+    ],
+    {
+      cancelable: false,
+    }
+  );
+};
+
 export const CommentsScreen = () => {
+  const navigation = useNavigation();
   const { params } = useRoute();
   const { user } = useAuth();
   const { userId, avatar, name } = user;
@@ -52,6 +79,13 @@ export const CommentsScreen = () => {
     setIsSubmit(Boolean(inputState.trim()));
   }, [inputState]);
 
+  const onDeletePost = async () => {
+    // await deletePost(params.postId);
+    // navigation.goBack();
+
+    actionConfirmation(deletePost, params.postId, navigation);
+  };
+
   const onSubmit = async () => {
     sendCommentToServer({
       newComment: inputState,
@@ -74,6 +108,12 @@ export const CommentsScreen = () => {
         ) : (
           <ActivityIndicator size="large" color="#FF6C00" />
         )}
+
+        {post && userId === post.userId && (
+          <CustomButton styleBtn={styles.deleteIcon} onPress={onDeletePost}>
+            <FontAwesome name="trash-o" size={24} color="#FF6C00" />
+          </CustomButton>
+        )}
       </View>
 
       <FlatList
@@ -81,7 +121,6 @@ export const CommentsScreen = () => {
         keyExtractor={(item) => item.commentId}
         renderItem={({ item }) => {
           const { own, ownAvatar, postDate, text, ownName } = item;
-          console.log(ownName);
           const isMyPost = userId === own;
 
           return (
@@ -98,6 +137,7 @@ export const CommentsScreen = () => {
                 ) : (
                   <Image source={avatar ? ownUserFoto : noNameFoto} style={styles.imgNoname} />
                 )}
+
                 <View style={{ paddingHorizontal: 16, width: '90%' }}>
                   {!isMyPost && <Text style={styles.data}>{ownName}</Text>}
                   <Text style={[styles.text, isMyPost && { textAlign: 'right' }]}>{text}</Text>
@@ -153,6 +193,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     borderRadius: 8,
+  },
+  deleteIcon: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    width: 60,
+    height: 60,
+    // alignSelf: 'center',
+    // marginTop: 'auto',
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: '#FF6C00',
   },
 
   listWrap: {

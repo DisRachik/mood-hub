@@ -9,6 +9,7 @@ import {
   getDoc,
   arrayUnion,
   arrayRemove,
+  deleteDoc,
 } from 'firebase/firestore';
 import { db } from './config';
 
@@ -31,7 +32,7 @@ export const uploadPostToServer = async (postData) => {
   try {
     await addDoc(dbRef, addData);
   } catch (error) {
-    console.error('Помилка додавання документу: ', error);
+    console.log('Помилка додавання документу: ', error);
   }
 };
 
@@ -48,7 +49,7 @@ export const getAllPosts = async (setDataPosts) => {
 
     listeners.push(unsubscribe);
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -63,7 +64,7 @@ export const getOwnPost = async (setDataPosts, userId) => {
 
     listeners.push(unsubscribe);
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
@@ -73,21 +74,13 @@ export const getOnePost = async (setDataPost, postId) => {
 
     setDataPost(postSnapshot.data());
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
-// export const getOnePost = async (setDataPost, postId) => {
-//   try {
-//     const unsubscribe = onSnapshot(dbRef, (querySnapshot) => {
-//       const findPost = querySnapshot.docs.find((doc) => doc.id === postId);
-//       setDataPost(findPost.data());
-//     });
 
-//     listeners.push(unsubscribe);
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+export const deletePost = async (postId) => {
+  await deleteDoc(postRef(postId));
+};
 
 export const sendCommentToServer = async ({
   newComment,
@@ -98,6 +91,8 @@ export const sendCommentToServer = async ({
   commentsCounter,
 }) => {
   try {
+    const post = await postRef(postId);
+
     await updateDoc(postRef(postId), {
       commentsCounter: commentsCounter + 1,
     });
@@ -112,7 +107,8 @@ export const sendCommentToServer = async ({
       ownName: name,
     });
   } catch (error) {
-    console.error(error);
+    alert('Нажаль даний пост був видалений власником');
+    console.log(error.message);
   }
 };
 
@@ -126,23 +122,21 @@ export const getCommentsForPost = async (setComments, postId) => {
 
     listeners.push(unsubscribe);
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };
 
 export const toggleLikeForPost = async (postId, userId, operation) => {
   try {
-    const post = postRef(postId);
+    const post = await postRef(postId);
 
     switch (operation) {
       case 'decrease':
-        console.log('decrease', operation);
         await updateDoc(post, {
           currentLikes: arrayRemove(userId),
         });
         break;
       case 'increase':
-        console.log('increase', operation);
         await updateDoc(post, {
           currentLikes: arrayUnion(userId),
         });
@@ -151,6 +145,6 @@ export const toggleLikeForPost = async (postId, userId, operation) => {
         break;
     }
   } catch (error) {
-    console.error(error);
+    console.log(error);
   }
 };

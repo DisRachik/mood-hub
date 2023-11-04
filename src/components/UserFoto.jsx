@@ -57,7 +57,7 @@ export const UserFoto = ({ toTop, userPhoto, setUserPhoto }) => {
         alert('Ви не вибрали нове фото.');
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
