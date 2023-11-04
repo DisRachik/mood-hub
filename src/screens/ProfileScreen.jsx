@@ -60,7 +60,7 @@ export const ProfileScreen = () => {
             style={styles.ItemsWrap}
             data={collection}
             keyExtractor={(item) => item.postId}
-            renderItem={({ item }) => <Card data={item} likeCount />}
+            renderItem={({ item }) => <Card data={item} />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
               <View

@@ -32,7 +32,7 @@ export const PostsScreen = () => {
       style={styles.cardsWrap}
       data={collection}
       keyExtractor={(item) => item.postId}
-      renderItem={({ item }) => <Card data={item} />}
+      renderItem={({ item }) => <Card data={item} likeCount />}
       showsVerticalScrollIndicator={false}
     />
   );

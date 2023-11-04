@@ -1,12 +1,22 @@
-import { collection, addDoc, onSnapshot, query, where, updateDoc, doc } from 'firebase/firestore';
+import {
+  collection,
+  addDoc,
+  onSnapshot,
+  query,
+  where,
+  updateDoc,
+  doc,
+  getDoc,
+  arrayUnion,
+  arrayRemove,
+} from 'firebase/firestore';
 import { db } from './config';
 
 import date from 'date-and-time';
 
 const dbRef = collection(db, 'posts');
 const postRef = (postId) => doc(db, 'posts', postId);
-
-const docRef = (postId) => collection(db, 'posts', postId, 'comments');
+const commentsRef = (postId) => collection(db, 'posts', postId, 'comments');
 
 const listeners = [];
 export const stopAllListeners = () => {
@@ -17,7 +27,7 @@ export const stopAllListeners = () => {
 };
 
 export const uploadPostToServer = async (postData) => {
-  const addData = { ...postData, rating: 0, commentsCounter: 0 };
+  const addData = { ...postData, rating: 0, commentsCounter: 0, currentLikes: [] };
   try {
     await addDoc(dbRef, addData);
   } catch (error) {
@@ -31,6 +41,7 @@ export const getAllPosts = async (setDataPosts) => {
       const dataPosts = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         postId: doc.id,
+        // isLiked,
       }));
       setDataPosts(dataPosts.reverse());
     });
@@ -58,16 +69,25 @@ export const getOwnPost = async (setDataPosts, userId) => {
 
 export const getOnePost = async (setDataPost, postId) => {
   try {
-    const unsubscribe = onSnapshot(dbRef, (querySnapshot) => {
-      const findPost = querySnapshot.docs.find((doc) => doc.id === postId);
-      setDataPost(findPost.data());
-    });
+    const postSnapshot = await getDoc(postRef(postId));
 
-    listeners.push(unsubscribe);
+    setDataPost(postSnapshot.data());
   } catch (error) {
     console.error(error);
   }
 };
+// export const getOnePost = async (setDataPost, postId) => {
+//   try {
+//     const unsubscribe = onSnapshot(dbRef, (querySnapshot) => {
+//       const findPost = querySnapshot.docs.find((doc) => doc.id === postId);
+//       setDataPost(findPost.data());
+//     });
+
+//     listeners.push(unsubscribe);
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
 export const sendCommentToServer = async ({
   newComment,
@@ -84,7 +104,7 @@ export const sendCommentToServer = async ({
 
     const postDate = date.format(new Date(), 'D MMMM YYYY | HH:mm');
 
-    await addDoc(docRef(postId), {
+    await addDoc(commentsRef(postId), {
       text: newComment,
       postDate,
       own: userId,
@@ -98,13 +118,38 @@ export const sendCommentToServer = async ({
 
 export const getCommentsForPost = async (setComments, postId) => {
   try {
-    const unsubscribe = onSnapshot(docRef(postId), (querySnapshot) => {
+    const unsubscribe = onSnapshot(commentsRef(postId), (querySnapshot) => {
       const dataComments = querySnapshot.docs.map((doc) => ({ ...doc.data(), commentId: doc.id }));
 
-      setComments(dataComments);
+      setComments(dataComments.reverse());
     });
 
     listeners.push(unsubscribe);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const toggleLikeForPost = async (postId, userId, operation) => {
+  try {
+    const post = postRef(postId);
+
+    switch (operation) {
+      case 'decrease':
+        console.log('decrease', operation);
+        await updateDoc(post, {
+          currentLikes: arrayRemove(userId),
+        });
+        break;
+      case 'increase':
+        console.log('increase', operation);
+        await updateDoc(post, {
+          currentLikes: arrayUnion(userId),
+        });
+        break;
+      default:
+        break;
+    }
   } catch (error) {
     console.error(error);
   }

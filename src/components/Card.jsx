@@ -1,19 +1,34 @@
-import { useState } from 'react';
-import { StyleSheet, Image, Text, View, useWindowDimensions } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { AuthScreenButton } from './buttons/AuthScreenButton';
-import { CustomButton } from './buttons/CustomButton';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
-export const Card = ({ data, likeCount }) => {
-  const { img, title, commentsCounter, region, country, rating, location, postId } = data;
+import { useAuth } from '../redux/auth/useAuth';
+import { toggleLikeForPost } from '../firebase/dataPostWithServer';
+
+import { Feather } from '@expo/vector-icons';
+import { StyleSheet, Image, Text, View, useWindowDimensions } from 'react-native';
+import { CustomButton } from './buttons/CustomButton';
+
+export const Card = ({ data }) => {
+  const { img, title, commentsCounter, region, country, location, postId, currentLikes } = data;
+  console.log('data', currentLikes);
+
+  const { user } = useAuth();
+  const [isLiked, setIsLiked] = useState(currentLikes.includes(user.userId));
+  console.log('isLiked', isLiked);
+
+  useEffect(() => {
+    setIsLiked(currentLikes.includes(user.userId));
+  }, [data]);
 
   const navigation = useNavigation();
 
   const { width } = useWindowDimensions();
   const imgHeight = width * 0.7;
 
-  const createAddressText = () => (likeCount ? `${country}` : `${region}, ${country}`);
+  onPressLikes = () => {
+    const operation = isLiked ? 'decrease' : 'increase';
+    toggleLikeForPost(postId, user.userId, operation);
+  };
 
   return (
     <View style={styles.container}>
@@ -27,7 +42,9 @@ export const Card = ({ data, likeCount }) => {
           resizeMode="cover"
         />
       </CustomButton>
+
       <Text style={styles.title}>{title}</Text>
+
       <View style={styles.info}>
         <CustomButton
           styleBtn={styles.wrap}
@@ -40,19 +57,19 @@ export const Card = ({ data, likeCount }) => {
           />
           <Text style={styles.infoText}>{commentsCounter}</Text>
         </CustomButton>
-        {likeCount && (
-          <View style={styles.wrap}>
-            <Feather name="thumbs-up" size={24} color={rating ? '#FF6C00' : '#BDBDBD'} />
-            <Text style={styles.infoText}>{rating}</Text>
-          </View>
-        )}
+
+        <CustomButton styleBtn={styles.wrap} onPress={onPressLikes}>
+          <Feather name="thumbs-up" size={24} color={isLiked ? '#FF6C00' : '#BDBDBD'} />
+          <Text style={styles.infoText}>{currentLikes.length}</Text>
+        </CustomButton>
+
         <CustomButton
-          styleBtn={[styles.wrap, { marginLeft: 'auto' }]}
+          styleBtn={[styles.wrap, styles.lastChild]}
           onPress={() => navigation.navigate('MapScreen', { ...location, title })}
         >
           <Feather name="map-pin" size={24} color="#BDBDBD" />
-          <Text style={[styles.infoText, { textDecorationLine: 'underline' }]}>
-            {likeCount ? `${country}` : `${region}, ${country}`}
+          <Text style={[styles.commentCounter, { textDecorationLine: 'underline' }]}>
+            {`${region}, ${country}`}
           </Text>
         </CustomButton>
       </View>
@@ -81,6 +98,7 @@ const styles = StyleSheet.create({
     color: '#212121',
   },
   info: {
+    width: '100%',
     marginTop: 8,
     flexDirection: 'row',
     gap: 24,
@@ -88,7 +106,12 @@ const styles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
     alignItems: 'center',
+    height: '100%',
     gap: 6,
+  },
+  lastChild: {
+    maxWidth: '60%',
+    marginLeft: 'auto',
   },
   commentCounter: {
     fontFamily: 'Roboto-Regular',

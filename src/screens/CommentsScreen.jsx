@@ -80,7 +80,8 @@ export const CommentsScreen = () => {
         data={comments}
         keyExtractor={(item) => item.commentId}
         renderItem={({ item }) => {
-          const { own, ownAvatar, postDate, text } = item;
+          const { own, ownAvatar, postDate, text, ownName } = item;
+          console.log(ownName);
           const isMyPost = userId === own;
 
           return (
@@ -97,9 +98,12 @@ export const CommentsScreen = () => {
                 ) : (
                   <Image source={avatar ? ownUserFoto : noNameFoto} style={styles.imgNoname} />
                 )}
-                <Text style={styles.text}>{text}</Text>
+                <View style={{ paddingHorizontal: 16, width: '90%' }}>
+                  {!isMyPost && <Text style={styles.data}>{ownName}</Text>}
+                  <Text style={[styles.text, isMyPost && { textAlign: 'right' }]}>{text}</Text>
+                </View>
               </View>
-              <Text style={[styles.data, !isMyPost && { textAlign: 'right' }]}>{postDate}</Text>
+              <Text style={[styles.data, isMyPost && { textAlign: 'left' }]}>{postDate}</Text>
             </View>
           );
         }}
@@ -169,8 +173,8 @@ const styles = StyleSheet.create({
 
   text: {
     flex: 1,
-    marginTop: 16,
-    marginHorizontal: 16,
+    // marginTop: 16,
+    // marginHorizontal: 16,
     fontFamily: 'Roboto-Regular',
     fontSize: 13,
     color: '#212121',
@@ -178,6 +182,7 @@ const styles = StyleSheet.create({
   },
   data: {
     marginHorizontal: 16,
+    textAlign: 'right',
     fontFamily: 'Roboto-Regular',
     fontSize: 10,
     color: '#BDBDBD',
