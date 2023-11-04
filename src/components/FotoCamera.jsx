@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
 
 import { Image, View, StyleSheet, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -110,6 +111,47 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
     }
   };
 
+  const pickImageFromDevice = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+        aspect: [1, 1],
+      });
+
+      if (!result.canceled) {
+        photoData((prevState) => ({
+          ...prevState,
+          image: result.assets[0],
+        }));
+
+        try {
+          let location = await Location.getCurrentPositionAsync({});
+          const coords = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          };
+          setLocation(coords);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        alert('Ви не вибрали нове фото.');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPickImg = () => {
+    if (newImage) {
+      onClearForm();
+      return;
+    }
+    pickImageFromDevice();
+  };
+
   return (
     <View>
       <View style={[styles.imgWrap, { height: imgWrapHeight }]}>
@@ -137,10 +179,10 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
       )}
 
       <CustomButton
-        title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
-        onPress={() => newImage && onClearForm()}
+        title={newImage ? 'Інше фото' : 'Завантажте фото'}
+        onPress={onPickImg}
         titleStyle={{ color: '#BDBDBD' }}
-        disabled={newImage ? false : true}
+        // disabled={newImage ? false : true}
       />
     </View>
   );
