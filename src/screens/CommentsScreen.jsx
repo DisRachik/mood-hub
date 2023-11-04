@@ -25,8 +25,9 @@ import {
 
 import { CustomButton } from '../components/buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
+import { deletePhotoFromServer } from '../firebase/uploadPhotoToServer';
 
-const actionConfirmation = async (deletePhotoFromUser, postId, navigation) => {
+const actionConfirmation = async (postId, image, navigation) => {
   Alert.alert(
     'Видалити фото?',
     'Ви впевнені, що хочете видалити це фото з профілю?',
@@ -39,7 +40,8 @@ const actionConfirmation = async (deletePhotoFromUser, postId, navigation) => {
         text: 'Видалити',
         style: 'destructive',
         onPress: async () => {
-          await deletePhotoFromUser(postId);
+          await deletePhotoFromServer('postPhoto/', image);
+          await deletePost(postId);
           navigation.goBack();
         },
       },
@@ -80,10 +82,7 @@ export const CommentsScreen = () => {
   }, [inputState]);
 
   const onDeletePost = async () => {
-    // await deletePost(params.postId);
-    // navigation.goBack();
-
-    actionConfirmation(deletePost, params.postId, navigation);
+    actionConfirmation(params.postId, post.img, navigation);
   };
 
   const onSubmit = async () => {

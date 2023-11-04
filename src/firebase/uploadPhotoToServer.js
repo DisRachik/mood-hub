@@ -1,4 +1,4 @@
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { storage } from './config';
 
 export const uploadPhotoToServer = async (folder, image) => {
@@ -16,4 +16,16 @@ export const uploadPhotoToServer = async (folder, image) => {
     }
   }
   return null;
+};
+
+export const deletePhotoFromServer = async (folder, image) => {
+  const response = await fetch(image);
+  const filename = response.headers.get('Content-Disposition').split(`filename*=utf-8''`)[1];
+
+  const storageRef = ref(storage, `${folder}/${filename}`);
+  try {
+    await deleteObject(storageRef);
+  } catch (error) {
+    console.log(error);
+  }
 };

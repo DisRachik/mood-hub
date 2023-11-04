@@ -6,8 +6,9 @@ import { useAuth } from '../redux/auth/useAuth';
 import { AntDesign } from '@expo/vector-icons';
 import { CustomButton } from './buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
+import { deletePhotoFromServer } from '../firebase/uploadPhotoToServer';
 
-const actionConfirmation = async (deletePhoto, setUserPhoto) => {
+const actionConfirmation = async (deletePhoto, image, setUserPhoto) => {
   Alert.alert(
     'Видалити фото?',
     'Ви впевнені, що хочете видалити це фото з профілю?',
@@ -20,6 +21,7 @@ const actionConfirmation = async (deletePhoto, setUserPhoto) => {
         text: 'Видалити',
         style: 'destructive',
         onPress: async () => {
+          await deletePhotoFromServer('avatars/', image);
           await deletePhoto({ avatarURL: '' });
           setUserPhoto(null);
         },
@@ -36,7 +38,7 @@ export const UserFoto = ({ toTop, userPhoto, setUserPhoto }) => {
   const onPickImage = async () => {
     if (userPhoto) {
       if (user.avatar) {
-        await actionConfirmation(updateAvatar, setUserPhoto);
+        await actionConfirmation(updateAvatar, user.avatar, setUserPhoto);
       } else {
         setUserPhoto(null);
       }

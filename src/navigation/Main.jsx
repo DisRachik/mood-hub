@@ -5,7 +5,8 @@ import { useAuth } from '../redux/auth/useAuth';
 import { AuthNavigation } from './AuthNavigation';
 import { MainNavigation } from './MainNavigation';
 
-import { ActivityIndicator, Modal, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Modal, StyleSheet, ImageBackground } from 'react-native';
+const image = require('../../assets/photo-bg.png');
 
 export const Main = () => {
   const { user, isLoading, checkUser } = useAuth();
@@ -24,9 +25,9 @@ export const Main = () => {
         statusBarTranslucent={true}
         onRequestClose={() => {}}
       >
-        <View style={styles.backdrop}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.backdrop}>
           <ActivityIndicator size={Platform.OS === 'ios' ? 'large' : 100} color="#FF6C00" />
-        </View>
+        </ImageBackground>
       </Modal>
     </>
   );
@@ -37,6 +38,5 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
 });
