@@ -7,9 +7,11 @@ import {
   updateDoc,
   doc,
   getDoc,
+  getDocs,
   arrayUnion,
   arrayRemove,
   deleteDoc,
+  orderBy,
 } from 'firebase/firestore';
 import { db } from './config';
 
@@ -28,7 +30,7 @@ export const stopAllListeners = () => {
 };
 
 export const uploadPostToServer = async (postData) => {
-  const addData = { ...postData, rating: 0, commentsCounter: 0, currentLikes: [] };
+  const addData = { ...postData, createdAt: Date.now(), commentsCounter: 0, currentLikes: [] };
   try {
     await addDoc(dbRef, addData);
   } catch (error) {
@@ -37,14 +39,14 @@ export const uploadPostToServer = async (postData) => {
 };
 
 export const getAllPosts = async (setDataPosts) => {
+  const filteredCollection = query(dbRef, orderBy('createdAt', 'desc'));
   try {
-    const unsubscribe = onSnapshot(dbRef, (querySnapshot) => {
+    const unsubscribe = onSnapshot(filteredCollection, (querySnapshot) => {
       const dataPosts = querySnapshot.docs.map((doc) => ({
         ...doc.data(),
         postId: doc.id,
-        // isLiked,
       }));
-      setDataPosts(dataPosts.reverse());
+      setDataPosts(dataPosts);
     });
 
     listeners.push(unsubscribe);
@@ -59,7 +61,8 @@ export const getOwnPost = async (setDataPosts, userId) => {
 
     const unsubscribe = onSnapshot(ruleQuery, (querySnapshot) => {
       const dataPosts = querySnapshot.docs.map((doc) => ({ ...doc.data(), postId: doc.id }));
-      setDataPosts(dataPosts.reverse());
+      const result = dataPosts.sort((a, b) => a.createdAt - b.createdAt);
+      setDataPosts(result);
     });
 
     listeners.push(unsubscribe);
@@ -79,6 +82,11 @@ export const getOnePost = async (setDataPost, postId) => {
 };
 
 export const deletePost = async (postId) => {
+  const querySnapshot = await getDocs(commentsRef(postId));
+  querySnapshot.forEach(async (doc) => {
+    await deleteDoc(doc.ref);
+  });
+
   await deleteDoc(postRef(postId));
 };
 
@@ -105,6 +113,7 @@ export const sendCommentToServer = async ({
       own: userId,
       ownAvatar: avatar,
       ownName: name,
+      createdAt: Date.now(),
     });
   } catch (error) {
     alert('Нажаль даний пост був видалений власником');
@@ -113,11 +122,12 @@ export const sendCommentToServer = async ({
 };
 
 export const getCommentsForPost = async (setComments, postId) => {
+  const filteredCollection = query(commentsRef(postId), orderBy('createdAt'));
   try {
-    const unsubscribe = onSnapshot(commentsRef(postId), (querySnapshot) => {
+    const unsubscribe = onSnapshot(filteredCollection, (querySnapshot) => {
       const dataComments = querySnapshot.docs.map((doc) => ({ ...doc.data(), commentId: doc.id }));
 
-      setComments(dataComments.reverse());
+      setComments(dataComments);
     });
 
     listeners.push(unsubscribe);

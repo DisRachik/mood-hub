@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 import { useAuth } from '../redux/auth/useAuth';
 
@@ -13,9 +14,12 @@ import { Card } from '../components/Card';
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { Title } from '../components/Title';
 import { UserFoto } from '../components/UserFoto';
+import { AuthScreenButton } from '../components/buttons/AuthScreenButton';
 const image = require('../../assets/photo-bg.png');
 
 export const ProfileScreen = () => {
+  const navigation = useNavigation();
+
   const { user, signOut, updateAvatar } = useAuth();
   const [userPhoto, setUserPhoto] = useState(null);
   const [collection, setCollection] = useState([]);
@@ -63,15 +67,12 @@ export const ProfileScreen = () => {
             renderItem={({ item }) => <Card data={item} />}
             showsVerticalScrollIndicator={false}
             ListEmptyComponent={
-              <View
-                style={{
-                  height: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'tomato',
-                }}
-              >
-                <Text style={{ color: 'red' }}>test</Text>
+              <View style={styles.emptyComponent}>
+                <AuthScreenButton
+                  text="Зробимо перше фото?   "
+                  nameNavigationScreen="ВПЕРЕД"
+                  onPress={() => navigation.navigate('CreatePostsScreen')}
+                />
               </View>
             }
           />
@@ -117,5 +118,11 @@ const styles = StyleSheet.create({
   },
   ItemsWrap: {
     width: '100%',
+  },
+
+  emptyComponent: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

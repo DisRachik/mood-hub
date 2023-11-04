@@ -21,7 +21,7 @@ const actionConfirmation = async (deletePhoto, image, setUserPhoto) => {
         text: 'Видалити',
         style: 'destructive',
         onPress: async () => {
-          await deletePhotoFromServer('avatars/', image);
+          // await deletePhotoFromServer('avatars/', image);
           await deletePhoto({ avatarURL: '' });
           setUserPhoto(null);
         },

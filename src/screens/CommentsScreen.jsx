@@ -134,11 +134,14 @@ export const CommentsScreen = () => {
                     )}
                   </>
                 ) : (
-                  <Image source={avatar ? ownUserFoto : noNameFoto} style={styles.imgNoname} />
+                  <Image
+                    source={avatar && avatar !== '' ? ownUserFoto : noNameFoto}
+                    style={styles.imgNoname}
+                  />
                 )}
 
                 <View style={{ paddingHorizontal: 16, width: '90%' }}>
-                  {!isMyPost && <Text style={styles.data}>{ownName}</Text>}
+                  {!isMyPost && <Text style={[styles.data, { color: '#FF6C00' }]}>{ownName}</Text>}
                   <Text style={[styles.text, isMyPost && { textAlign: 'right' }]}>{text}</Text>
                 </View>
               </View>
