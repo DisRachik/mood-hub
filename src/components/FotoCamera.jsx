@@ -117,7 +117,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         quality: 1,
-        aspect: [1, 1],
+        aspect: [3, 4],
       });
 
       if (!result.canceled) {
@@ -154,35 +154,36 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
   return (
     <View>
-      <View style={[styles.imgWrap, { height: imgWrapHeight }]}>
-        {newImage ? (
-          <Image source={newImage} style={styles.img} />
-        ) : (
-          <Camera style={styles.camera} type={type} ref={setCameraRef} />
+      <View>
+        <View style={[styles.imgWrap, { height: imgWrapHeight }]}>
+          {newImage ? (
+            <Image source={newImage} style={styles.img} />
+          ) : (
+            <Camera style={styles.camera} type={type} ref={setCameraRef} />
+          )}
+        </View>
+        <CustomButton
+          styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}
+          onPress={onPhoto}
+          disabled={isLoading === 'pending' ? true : false}
+        >
+          {isLoading === 'fulfilled' && (
+            <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
+          )}
+          {isLoading === 'pending' && <ActivityIndicator size="large" color="#FF6C00" />}
+        </CustomButton>
+
+        {permission && !newImage && (
+          <CustomButton styleBtn={styles.iconTypeFoto} onPress={toggleCameraType}>
+            <FontAwesome name="refresh" size={24} color="#BDBDBD" />
+          </CustomButton>
         )}
       </View>
       <CustomButton
-        styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}
-        onPress={onPhoto}
-        disabled={isLoading === 'pending' ? true : false}
-      >
-        {isLoading === 'fulfilled' && (
-          <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
-        )}
-        {isLoading === 'pending' && <ActivityIndicator size="large" color="#FF6C00" />}
-      </CustomButton>
-
-      {permission && !newImage && (
-        <CustomButton styleBtn={styles.iconTypeFoto} onPress={toggleCameraType}>
-          <FontAwesome name="refresh" size={24} color="#BDBDBD" />
-        </CustomButton>
-      )}
-
-      <CustomButton
         title={newImage ? 'Інше фото' : 'Завантажте фото'}
         onPress={onPickImg}
-        titleStyle={{ color: '#BDBDBD' }}
-        // disabled={newImage ? false : true}
+        styleBtn={[styles.btn, newImage && styles.btnOther]}
+        titleStyle={[styles.btnText, newImage && styles.btnOtherText]}
       />
     </View>
   );
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: [{ translateX: -30 }, { translateY: -45 }],
+    transform: [{ translateX: -30 }, { translateY: -30 }],
 
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     justifyContent: 'center',
@@ -220,4 +221,21 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+
+  btn: {
+    width: '100%',
+    height: 51,
+    marginVertical: 8,
+    backgroundColor: '#FF6C00',
+    borderRadius: 100,
+  },
+  btnText: {
+    color: '#FFFFFF',
+  },
+  btnOther: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#BDBDBD',
+  },
+  btnOtherText: { color: '#BDBDBD' },
 });
