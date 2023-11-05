@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { authSighIn, authSighOut, authSighUp, checkAuth, updateUserFoto } from './authOperations';
 
 const initialState = {
@@ -12,41 +12,8 @@ export const authSlice = createSlice({
   initialState: initialState,
   extraReducers: (builder) =>
     builder
-      .addCase(authSighUp.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(authSighUp.fulfilled, (state, action) => {
-        const { displayName, email, uid, photoURL } = action.payload;
-        state.user = { userId: uid, name: displayName, email, avatar: photoURL };
-        state.isLoading = false;
-      })
-      .addCase(authSighUp.rejected, (state) => {
-        state.isLoading = false;
-      })
-      .addCase(authSighIn.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(authSighIn.fulfilled, (state, action) => {
-        const { displayName, email, uid, photoURL } = action.payload;
-        state.user = { userId: uid, name: displayName, email, avatar: photoURL };
-        state.isLoading = false;
-      })
-      .addCase(authSighIn.rejected, (state) => {
-        state.isLoading = false;
-      })
       .addCase(authSighOut.fulfilled, (state) => {
         state.user = initialState.user;
-      })
-      .addCase(checkAuth.pending, (state) => {
-        state.isLoading = true;
-      })
-      .addCase(checkAuth.fulfilled, (state, action) => {
-        const { displayName, email, uid, photoURL } = action.payload;
-        state.user = { userId: uid, name: displayName, email, avatar: photoURL };
-        state.isLoading = false;
-      })
-      .addCase(checkAuth.rejected, (state) => {
-        state.isLoading = false;
       })
       .addCase(updateUserFoto.pending, (state) => {
         state.isUpdateComponent = true;
@@ -57,5 +24,22 @@ export const authSlice = createSlice({
       })
       .addCase(updateUserFoto.rejected, (state) => {
         state.isUpdateComponent = false;
-      }),
+      })
+      .addMatcher(isAnyOf(authSighUp.pending, authSighIn.pending, checkAuth.pending), (state) => {
+        state.isLoading = true;
+      })
+      .addMatcher(
+        isAnyOf(authSighUp.fulfilled, authSighIn.fulfilled, checkAuth.fulfilled),
+        (state, action) => {
+          const { displayName, email, uid, photoURL } = action.payload;
+          state.user = { userId: uid, name: displayName, email, avatar: photoURL };
+          state.isLoading = false;
+        }
+      )
+      .addMatcher(
+        isAnyOf(authSighUp.rejected, authSighIn.rejected, checkAuth.rejected),
+        (state) => {
+          state.isLoading = false;
+        }
+      ),
 });
