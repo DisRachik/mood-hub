@@ -1,39 +1,83 @@
-import { FlatList, ImageBackground, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+import { useAuth } from '../redux/auth/useAuth';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import { FlatList, ImageBackground, StyleSheet, Text, View } from 'react-native';
+
+import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
+import { getOwnPost } from '../firebase/dataPostWithServer';
+
 import { Card } from '../components/Card';
 import { LogOutButton } from '../components/buttons/LogOutButton';
 import { Title } from '../components/Title';
 import { UserFoto } from '../components/UserFoto';
-import { useAuth } from '../navigation/AuthProvider';
-import { useCollection } from '../navigation/CollectionContext';
-
+import { AuthScreenButton } from '../components/buttons/AuthScreenButton';
 const image = require('../../assets/photo-bg.png');
 
 export const ProfileScreen = () => {
-  const { onAccess } = useAuth();
-  const { collection } = useCollection();
+  const navigation = useNavigation();
+
+  const { user, signOut, updateAvatar } = useAuth();
+  const [userPhoto, setUserPhoto] = useState(null);
+  const [collection, setCollection] = useState([]);
+
+  useEffect(() => {
+    getOwnPost(setCollection, user.userId);
+  }, []);
+
+  useEffect(() => {
+    user.avatar && setUserPhoto({ uri: user.avatar });
+  }, [user]);
+
+  useEffect(() => {
+    (async () => {
+      if (!user.avatar && userPhoto) {
+        const avatarURL = await uploadPhotoToServer('avatars/', userPhoto);
+        updateAvatar({ avatarURL: avatarURL });
+      }
+    })();
+  }, [userPhoto]);
 
   const onLogOut = () => {
-    onAccess();
+    signOut();
   };
 
   return (
     <ImageBackground source={image} resizeMode="cover" style={styles.imageBg}>
-      <View style={styles.container}>
-        <FlatList
-          ListHeaderComponent={() => (
-            <View style={styles.userWrap}>
-              <UserFoto />
-              <LogOutButton onPress={onLogOut} style={styles.btn} />
-              <Title text="Natali Romanova" />
-            </View>
-          )}
-          style={styles.ItemsWrap}
-          data={collection}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Card data={item} likeCount />}
-          showsVerticalScrollIndicator={false}
-        />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0.0)', '#fff']}
+          locations={[0.3, 0.3]}
+          style={styles.gradient}
+        >
+          <FlatList
+            ListHeaderComponent={() => (
+              <View style={styles.userWrap}>
+                <UserFoto userPhoto={userPhoto} setUserPhoto={setUserPhoto} />
+                <LogOutButton onPress={onLogOut} style={styles.btn} />
+                <Title text={user.name} />
+              </View>
+            )}
+            style={styles.ItemsWrap}
+            data={collection}
+            keyExtractor={(item) => item.postId}
+            renderItem={({ item }) => <Card data={item} />}
+            showsVerticalScrollIndicator={false}
+            ListEmptyComponent={
+              <View style={styles.emptyComponent}>
+                <AuthScreenButton
+                  text="Зробимо перше фото?   "
+                  nameNavigationScreen="ВПЕРЕД"
+                  onPress={() => navigation.navigate('CreatePostsScreen')}
+                />
+              </View>
+            }
+          />
+        </LinearGradient>
+      </SafeAreaView>
     </ImageBackground>
   );
 };
@@ -41,6 +85,14 @@ export const ProfileScreen = () => {
 const styles = StyleSheet.create({
   imageBg: {
     flex: 1,
+  },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  gradient: {
+    flex: 1,
+    width: '100%',
   },
   userWrap: {
     marginTop: 119,
@@ -53,10 +105,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
   },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-  },
+
   btn: {
     position: 'absolute',
     top: -22,
@@ -67,5 +116,13 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 16,
   },
-  ItemsWrap: { width: '100%' },
+  ItemsWrap: {
+    width: '100%',
+  },
+
+  emptyComponent: {
+    height: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

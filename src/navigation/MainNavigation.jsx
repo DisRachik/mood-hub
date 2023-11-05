@@ -1,7 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 const MainStack = createStackNavigator();
 
-import { View, StyleSheet } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { HomeNavigation } from './HomeNavigation';

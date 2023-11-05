@@ -1,17 +1,47 @@
-import { useState } from 'react';
-import { Image, Keyboard, StyleSheet, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, StyleSheet, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { AntDesign } from '@expo/vector-icons';
 
+import { useAuth } from '../redux/auth/useAuth';
+
+import { AntDesign } from '@expo/vector-icons';
 import { CustomButton } from './buttons/CustomButton';
 import noNameFoto from '../../assets/images.jpg';
+import { deletePhotoFromServer } from '../firebase/uploadPhotoToServer';
 
-export const UserFoto = ({ toTop }) => {
-  const [userPhoto, setUserPhoto] = useState(null);
+const actionConfirmation = async (deletePhoto, image, setUserPhoto) => {
+  Alert.alert(
+    'Видалити фото?',
+    'Ви впевнені, що хочете видалити це фото з профілю?',
+    [
+      {
+        text: 'Відміна',
+        style: 'cancel',
+      },
+      {
+        text: 'Видалити',
+        style: 'destructive',
+        onPress: async () => {
+          // await deletePhotoFromServer('avatars/', image);
+          await deletePhoto({ avatarURL: '' });
+          setUserPhoto(null);
+        },
+      },
+    ],
+    {
+      cancelable: false,
+    }
+  );
+};
 
+export const UserFoto = ({ toTop, userPhoto, setUserPhoto }) => {
+  const { user, updateAvatar, isUpdateComponent } = useAuth();
   const onPickImage = async () => {
     if (userPhoto) {
-      setUserPhoto(null);
+      if (user.avatar) {
+        await actionConfirmation(updateAvatar, user.avatar, setUserPhoto);
+      } else {
+        setUserPhoto(null);
+      }
       return;
     }
 
@@ -29,26 +59,34 @@ export const UserFoto = ({ toTop }) => {
         alert('Ви не вибрали нове фото.');
       }
     } catch (error) {
-      console.error(error);
+      console.log(error);
     }
   };
 
   return (
     <View style={[styles.imgWrap, toTop && styles.imgWrapToTop]}>
-      <Image source={userPhoto ? userPhoto : noNameFoto} style={styles.img} />
-      <CustomButton onPress={onPickImage} styleBtn={styles.iconBtn}>
-        <AntDesign
-          name="pluscircleo"
-          size={25}
-          style={userPhoto ? styles.iconActive : styles.icon}
-        />
-      </CustomButton>
+      {isUpdateComponent ? (
+        <ActivityIndicator size="large" color="#FF6C00" />
+      ) : (
+        <>
+          <Image source={userPhoto ? userPhoto : noNameFoto} style={styles.img} />
+          <CustomButton onPress={onPickImage} styleBtn={styles.iconBtn}>
+            <AntDesign
+              name="pluscircleo"
+              size={25}
+              style={userPhoto ? styles.iconActive : styles.icon}
+            />
+          </CustomButton>
+        </>
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   imgWrap: {
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 120,
     height: 120,
     position: 'absolute',

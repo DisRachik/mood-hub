@@ -1,4 +1,10 @@
 import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+
+import { useAuth } from '../redux/auth/useAuth';
+
+import { uploadPhotoToServer } from '../firebase/uploadPhotoToServer';
+import { uploadPostToServer } from '../firebase/dataPostWithServer';
 
 import {
   StyleSheet,
@@ -10,12 +16,12 @@ import {
   Platform,
   ScrollView,
   Text,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { CustomButton } from '../components/buttons/CustomButton';
 import { FotoCamera } from '../components/FotoCamera';
-import { useCollection } from '../navigation/CollectionContext';
-import { useNavigation } from '@react-navigation/native';
 
 const initialFormState = {
   image: '',
@@ -25,29 +31,19 @@ const initialFormState = {
 };
 
 export const CreatePostsScreen = () => {
-  const { addPost } = useCollection();
+  const { user } = useAuth();
   const navigation = useNavigation();
 
   const [formState, setFormState] = useState(initialFormState);
   const [activeInput, setActiveInput] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     setError(null);
   }, [formState.place]);
 
-  const addNewFoto = async (data) => {
-    try {
-      await addPost(data);
-
-      navigation.navigate('PostsScreen');
-      setFormState(initialFormState);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const onSubmit = () => {
+  const onSubmit = async () => {
     const { image, title, location, place } = formState;
 
     const partsAddress = place.split(',');
@@ -56,19 +52,25 @@ export const CreatePostsScreen = () => {
       return;
     }
 
+    setIsLoading(true);
+
+    const newPhotoURL = await uploadPhotoToServer('postPhoto/', image);
+
     const region = partsAddress[0].trim();
     const country = partsAddress[1].trim();
     const formData = {
-      img: image,
+      userId: user.userId,
+      img: newPhotoURL,
       title,
       location,
       region,
       country,
-      comment: [],
-      rating: 0,
-      id: Date.now().toString(),
     };
-    addNewFoto(formData);
+
+    await uploadPostToServer(formData);
+    setIsLoading(false);
+    navigation.navigate('PostsScreen');
+    setFormState(initialFormState);
   };
 
   const onClearForm = () => setFormState(initialFormState);
@@ -76,81 +78,95 @@ export const CreatePostsScreen = () => {
   const isFormClear = formState.image || formState.title || formState.place;
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.wrapKeyboard}
-      >
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-          <View style={[styles.container, activeInput && { paddingBottom: 100 }]}>
-            <FotoCamera
-              photoData={setFormState}
-              onClearForm={onClearForm}
-              newImage={formState.image}
-            />
+    <>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.wrapKeyboard}
+        >
+          <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+            <View style={[styles.container, activeInput && { paddingBottom: 100 }]}>
+              <FotoCamera
+                photoData={setFormState}
+                onClearForm={onClearForm}
+                newImage={formState.image}
+              />
 
-            <TextInput
-              name="title"
-              style={[styles.input, activeInput === 'title' && styles.inputActive]}
-              placeholder="Назва..."
-              placeholderTextColor="#BDBDBD"
-              onFocus={() => {
-                setActiveInput('title');
-              }}
-              onBlur={() => {
-                setActiveInput(null);
-              }}
-              value={formState.title}
-              onChangeText={(value) =>
-                setFormState((prevState) => ({ ...prevState, title: value }))
-              }
-            />
-            <View style={styles.inputWrap}>
-              <Feather name="map-pin" size={24} style={styles.mapPinIcon} />
               <TextInput
-                name="place"
-                style={[
-                  styles.input,
-                  styles.inputPlace,
-                  activeInput === 'place' && styles.inputActive,
-                ]}
-                placeholder="Місцевість..."
+                name="title"
+                style={[styles.input, activeInput === 'title' && styles.inputActive]}
+                placeholder="Назва..."
                 placeholderTextColor="#BDBDBD"
                 onFocus={() => {
-                  setActiveInput('place');
+                  setActiveInput('title');
                 }}
                 onBlur={() => {
                   setActiveInput(null);
                 }}
-                value={formState.place}
+                value={formState.title}
                 onChangeText={(value) =>
-                  setFormState((prevState) => ({ ...prevState, place: value }))
+                  setFormState((prevState) => ({ ...prevState, title: value }))
                 }
               />
-              {error && <Text style={{ color: 'red' }}>{error}</Text>}
-            </View>
+              <View style={styles.inputWrap}>
+                <Feather name="map-pin" size={24} style={styles.mapPinIcon} />
+                <TextInput
+                  name="place"
+                  style={[
+                    styles.input,
+                    styles.inputPlace,
+                    activeInput === 'place' && styles.inputActive,
+                  ]}
+                  placeholder="Місцевість..."
+                  placeholderTextColor="#BDBDBD"
+                  onFocus={() => {
+                    setActiveInput('place');
+                  }}
+                  onBlur={() => {
+                    setActiveInput(null);
+                  }}
+                  value={formState.place}
+                  onChangeText={(value) =>
+                    setFormState((prevState) => ({ ...prevState, place: value }))
+                  }
+                />
+                {error && <Text style={{ color: 'red' }}>{error}</Text>}
+              </View>
 
-            {isFormValid ? (
+              {isFormValid ? (
+                <CustomButton
+                  title="Опубліковати"
+                  onPress={onSubmit}
+                  styleBtn={styles.formBtn}
+                  titleStyle={styles.formBtnText}
+                />
+              ) : (
+                <Text style={styles.text}>Опубліковати</Text>
+              )}
+
               <CustomButton
-                title="Опубліковати"
-                onPress={onSubmit}
-                styleBtn={styles.formBtn}
-                titleStyle={styles.formBtnText}
-              />
-            ) : (
-              <Text style={styles.text}>Опубліковати</Text>
-            )}
+                styleBtn={[styles.deleteIcon, !isFormClear && { borderColor: '#FFFFFF' }]}
+                onPress={onClearForm}
+              >
+                <Feather name="trash-2" size={24} color={formState.image ? '#212121' : '#BDBDBD'} />
+              </CustomButton>
+            </View>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
 
-            <CustomButton
-              styleBtn={[styles.deleteIcon, !isFormClear && { borderColor: '#FFFFFF' }]}
-              onPress={onClearForm}
-            >
-              <Feather name="trash-2" size={24} color={formState.image ? '#212121' : '#BDBDBD'} />
-            </CustomButton>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={isLoading}
+        statusBarTranslucent={true}
+        onRequestClose={() => {}}
+      >
+        <View style={styles.backdrop}>
+          <ActivityIndicator size={Platform.OS === 'ios' ? 'large' : 100} color="#FF6C00" />
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -224,5 +240,11 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     borderColor: '#FF6C00',
+  },
+  backdrop: {
+    flex: 1,
+    textAlign: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
   },
 });

@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Camera, CameraType } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import * as Location from 'expo-location';
+import * as ImagePicker from 'expo-image-picker';
 
 import { Image, View, StyleSheet, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
@@ -27,7 +28,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
 
         setPermission(status === 'granted');
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     })();
   }, []);
@@ -37,10 +38,10 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
       try {
         let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
-          console.error('У доступі до місцезнаходження відмовлено');
+          alert('У доступі до місцезнаходження відмовлено');
         }
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     })();
   }, []);
@@ -61,7 +62,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
           location,
         }));
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     })();
   }, [location]);
@@ -77,7 +78,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
         setLocation('');
         onClearForm();
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
       return;
     }
@@ -92,7 +93,7 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
           image: asset,
         }));
       } catch (error) {
-        console.error(error);
+        console.log(error);
       } finally {
         setIsLoading('fulfilled');
       }
@@ -105,42 +106,84 @@ export const FotoCamera = ({ photoData, onClearForm, newImage }) => {
         };
         setLocation(coords);
       } catch (error) {
-        console.error(error);
+        console.log(error);
       }
     }
   };
 
+  const pickImageFromDevice = async () => {
+    try {
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+        aspect: [3, 4],
+      });
+
+      if (!result.canceled) {
+        photoData((prevState) => ({
+          ...prevState,
+          image: result.assets[0],
+        }));
+
+        try {
+          let location = await Location.getCurrentPositionAsync({});
+          const coords = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          };
+          setLocation(coords);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        alert('Ви не вибрали нове фото.');
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPickImg = () => {
+    if (newImage) {
+      onClearForm();
+      return;
+    }
+    pickImageFromDevice();
+  };
+
   return (
     <View>
-      <View style={[styles.imgWrap, { height: imgWrapHeight }]}>
-        {newImage ? (
-          <Image source={newImage} style={styles.img} />
-        ) : (
-          <Camera style={styles.camera} type={type} ref={setCameraRef} />
+      <View>
+        <View style={[styles.imgWrap, { height: imgWrapHeight }]}>
+          {newImage ? (
+            <Image source={newImage} style={styles.img} />
+          ) : (
+            <Camera style={styles.camera} type={type} ref={setCameraRef} />
+          )}
+        </View>
+        <CustomButton
+          styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}
+          onPress={onPhoto}
+          disabled={isLoading === 'pending' ? true : false}
+        >
+          {isLoading === 'fulfilled' && (
+            <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
+          )}
+          {isLoading === 'pending' && <ActivityIndicator size="large" color="#FF6C00" />}
+        </CustomButton>
+
+        {permission && !newImage && (
+          <CustomButton styleBtn={styles.iconTypeFoto} onPress={toggleCameraType}>
+            <FontAwesome name="refresh" size={24} color="#BDBDBD" />
+          </CustomButton>
         )}
       </View>
       <CustomButton
-        styleBtn={[styles.iconCircle, newImage && { color: '#FFFFFF' }]}
-        onPress={onPhoto}
-        disabled={isLoading === 'pending' ? true : false}
-      >
-        {isLoading === 'fulfilled' && (
-          <FontAwesome name="camera" size={24} color={newImage ? '#FFFFFF' : '#BDBDBD'} />
-        )}
-        {isLoading === 'pending' && <ActivityIndicator size="large" color="#FF6C00" />}
-      </CustomButton>
-
-      {permission && !newImage && (
-        <CustomButton styleBtn={styles.iconTypeFoto} onPress={toggleCameraType}>
-          <FontAwesome name="refresh" size={24} color="#BDBDBD" />
-        </CustomButton>
-      )}
-
-      <CustomButton
-        title={newImage ? 'Редагувати фото' : 'Завантажте фото'}
-        onPress={() => newImage && onClearForm()}
-        titleStyle={{ color: '#BDBDBD' }}
-        disabled={newImage ? false : true}
+        title={newImage ? 'Інше фото' : 'Завантажте фото'}
+        onPress={onPickImg}
+        styleBtn={[styles.btn, newImage && styles.btnOther]}
+        titleStyle={[styles.btnText, newImage && styles.btnOtherText]}
       />
     </View>
   );
@@ -167,7 +210,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: [{ translateX: -30 }, { translateY: -45 }],
+    transform: [{ translateX: -30 }, { translateY: -30 }],
 
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     justifyContent: 'center',
@@ -178,4 +221,21 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+
+  btn: {
+    width: '100%',
+    height: 51,
+    marginVertical: 8,
+    backgroundColor: '#FF6C00',
+    borderRadius: 100,
+  },
+  btnText: {
+    color: '#FFFFFF',
+  },
+  btnOther: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#BDBDBD',
+  },
+  btnOtherText: { color: '#BDBDBD' },
 });

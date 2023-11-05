@@ -1,11 +1,14 @@
-import { useForm, Controller } from 'react-hook-form';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { useState } from 'react';
-import { CustomButton } from '../buttons/CustomButton';
-import { useAuth } from '../../navigation/AuthProvider';
+import { useForm, Controller } from 'react-hook-form';
 
-export const RegistrationForm = ({ keyboardOpen }) => {
-  const { onAccess } = useAuth();
+import { useAuth } from '../../redux/auth/useAuth';
+
+import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { CustomButton } from '../buttons/CustomButton';
+import { uploadPhotoToServer } from '../../firebase/uploadPhotoToServer';
+
+export const RegistrationForm = ({ keyboardOpen, userPhoto }) => {
+  const { sighUp } = useAuth();
   const [activeInput, setActiveInput] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -19,15 +22,20 @@ export const RegistrationForm = ({ keyboardOpen }) => {
   } = useForm({
     defaultValues: {
       login: '',
-      email: '',
+      mail: '',
       password: '',
     },
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
-    reset();
-    onAccess();
+  const onSubmit = async (data) => {
+    const avatarURL = await uploadPhotoToServer('avatars/', userPhoto);
+    sighUp({ ...data, avatarURL })
+      .then(() => {
+        reset();
+      })
+      .catch((error) => {
+        alert(error);
+      });
   };
 
   return (
@@ -70,7 +78,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
                 onBlur();
               }}
               onFocus={() => {
-                setActiveInput('email');
+                setActiveInput('mail');
               }}
               keyboardType="email-address"
               onChangeText={onChange}
@@ -78,10 +86,10 @@ export const RegistrationForm = ({ keyboardOpen }) => {
               placeholder="Адреса електронної пошти"
               placeholderTextColor="#BDBDBD"
               autoCapitalize="none"
-              style={[styles.input, activeInput === 'email' && styles.inputActive]}
+              style={[styles.input, activeInput === 'mail' && styles.inputActive]}
             />
           )}
-          name="email"
+          name="mail"
           rules={{
             required: "Це поле є обов'язковим",
             pattern: {
@@ -91,7 +99,7 @@ export const RegistrationForm = ({ keyboardOpen }) => {
           }}
           defaultValue=""
         />
-        {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
+        {errors.mail && <Text style={styles.error}>{errors.mail.message}</Text>}
       </View>
 
       <View>
@@ -116,7 +124,13 @@ export const RegistrationForm = ({ keyboardOpen }) => {
             />
           )}
           name="password"
-          rules={{ required: "Це поле є обов'язковим" }}
+          rules={{
+            required: "Це поле є обов'язковим",
+            minLength: {
+              value: 6,
+              message: 'Пароль повинен бути мінімум 6 символів',
+            },
+          }}
           defaultValue=""
         />
         {errors.password && <Text style={styles.error}>{errors.password.message}</Text>}

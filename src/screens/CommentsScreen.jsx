@@ -1,5 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+
+import { useAuth } from '../redux/auth/useAuth';
+import {
+  deletePost,
+  getCommentsForPost,
+  getOnePost,
+  sendCommentToServer,
+} from '../firebase/dataPostWithServer';
 
 import { FontAwesome } from '@expo/vector-icons';
 import {
@@ -11,17 +19,49 @@ import {
   Text,
   TextInput,
   Keyboard,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 
 import { CustomButton } from '../components/buttons/CustomButton';
-import { useCollection } from '../navigation/CollectionContext';
 import noNameFoto from '../../assets/images.jpg';
+import { deletePhotoFromServer } from '../firebase/uploadPhotoToServer';
+
+const actionConfirmation = async (postId, image, navigation) => {
+  Alert.alert(
+    'Видалити фото?',
+    'Ви впевнені, що хочете видалити це фото з профілю?',
+    [
+      {
+        text: 'Відміна',
+        style: 'cancel',
+      },
+      {
+        text: 'Видалити',
+        style: 'destructive',
+        onPress: async () => {
+          await deletePhotoFromServer('postPhoto/', image);
+          await deletePost(postId);
+          navigation.goBack();
+        },
+      },
+    ],
+    {
+      cancelable: false,
+    }
+  );
+};
 
 export const CommentsScreen = () => {
+  const navigation = useNavigation();
   const { params } = useRoute();
-  const { img, comment, id } = params;
+  const { user } = useAuth();
+  const { userId, avatar, name } = user;
+  const ownUserFoto = { uri: avatar };
 
-  const { addComment } = useCollection();
+  const [post, setPost] = useState(null);
+  const [comments, setComments] = useState([]);
+
   const [inputState, setInputState] = useState('');
   const [activeInput, setActiveInput] = useState(false);
   const [isSubmit, setIsSubmit] = useState(null);
@@ -30,45 +70,82 @@ export const CommentsScreen = () => {
   const imgHeight = width * 0.7;
 
   useEffect(() => {
+    (async () => await getOnePost(setPost, params.postId))();
+  }, []);
+
+  useEffect(() => {
+    (async () => await getCommentsForPost(setComments, params.postId))();
+  }, []);
+
+  useEffect(() => {
     setIsSubmit(Boolean(inputState.trim()));
   }, [inputState]);
 
-  const onSubmit = async () => {
-    try {
-      addComment({
-        newComment: inputState,
-        idPost: id,
-        idUser: 'I`m',
-      });
+  const onDeletePost = async () => {
+    actionConfirmation(params.postId, post.img, navigation);
+  };
 
-      setInputState('');
-      Keyboard.dismiss();
-    } catch (error) {
-      console.error(error);
-    }
+  const onSubmit = async () => {
+    sendCommentToServer({
+      newComment: inputState,
+      postId: params.postId,
+      userId,
+      avatar,
+      name,
+      commentsCounter: post.commentsCounter,
+    });
+
+    setInputState('');
+    Keyboard.dismiss();
   };
 
   return (
     <View style={styles.container}>
-      <Image source={img} style={[styles.img, { height: imgHeight }]} resizeMode="contain" />
+      <View style={[styles.imgWrap, { height: imgHeight }]}>
+        {post ? (
+          <Image source={{ uri: post.img }} style={[styles.img]} resizeMode="cover" />
+        ) : (
+          <ActivityIndicator size="large" color="#FF6C00" />
+        )}
+
+        {post && userId === post.userId && (
+          <CustomButton styleBtn={styles.deleteIcon} onPress={onDeletePost}>
+            <FontAwesome name="trash-o" size={24} color="#FF6C00" />
+          </CustomButton>
+        )}
+      </View>
 
       <FlatList
-        data={comment}
-        keyExtractor={(item) => item.id}
+        data={comments}
+        keyExtractor={(item) => item.commentId}
         renderItem={({ item }) => {
-          const { user, date, text } = item;
-          const isMyPost = user === 'I`m';
+          const { own, ownAvatar, postDate, text, ownName } = item;
+          const isMyPost = userId === own;
+
           return (
             <View style={styles.commentWrap}>
               <View style={[styles.comment, isMyPost && { flexDirection: 'row-reverse' }]}>
                 {!isMyPost ? (
-                  <FontAwesome name="user-secret" size={28} color="#212121" />
+                  <>
+                    {ownAvatar ? (
+                      <Image source={{ uri: ownAvatar }} style={styles.imgNoname} />
+                    ) : (
+                      <FontAwesome name="user-secret" size={28} color="#212121" />
+                    )}
+                  </>
                 ) : (
-                  <Image source={noNameFoto} style={styles.imgNoname} />
+                  <Image
+                    source={avatar && avatar !== '' ? ownUserFoto : noNameFoto}
+                    style={styles.imgNoname}
+                  />
                 )}
-                <Text style={styles.text}>{text}</Text>
+
+                <View style={{ paddingHorizontal: 16, width: '90%' }}>
+                  {!isMyPost && <Text style={[styles.data, { color: '#FF6C00' }]}>{ownName}</Text>}
+                  <Text style={[styles.text, isMyPost && { textAlign: 'right' }]}>{text}</Text>
+                </View>
               </View>
-              <Text style={[styles.data, !isMyPost && { textAlign: 'right' }]}>{date}</Text>
+              <Text style={[styles.data, isMyPost && { textAlign: 'left' }]}>{postDate}</Text>
             </View>
           );
         }}
@@ -113,9 +190,23 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
     paddingHorizontal: 16,
   },
+  imgWrap: { width: '100%' },
   img: {
     width: '100%',
+    height: '100%',
     borderRadius: 8,
+  },
+  deleteIcon: {
+    position: 'absolute',
+    top: 15,
+    right: 15,
+    width: 60,
+    height: 60,
+    // alignSelf: 'center',
+    // marginTop: 'auto',
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: '#FF6C00',
   },
 
   listWrap: {
@@ -136,8 +227,8 @@ const styles = StyleSheet.create({
 
   text: {
     flex: 1,
-    marginTop: 16,
-    marginHorizontal: 16,
+    // marginTop: 16,
+    // marginHorizontal: 16,
     fontFamily: 'Roboto-Regular',
     fontSize: 13,
     color: '#212121',
@@ -145,6 +236,7 @@ const styles = StyleSheet.create({
   },
   data: {
     marginHorizontal: 16,
+    textAlign: 'right',
     fontFamily: 'Roboto-Regular',
     fontSize: 10,
     color: '#BDBDBD',

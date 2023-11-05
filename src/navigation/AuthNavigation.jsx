@@ -5,11 +5,11 @@ import { LoginScreen } from '../screens/LoginScreen';
 
 export const AuthNavigation = () => (
   <AuthStack.Navigator>
+    <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
     <AuthStack.Screen
       name="Registration"
       component={RegistrationScreen}
       options={{ headerShown: false }}
     />
-    <AuthStack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
   </AuthStack.Navigator>
 );
