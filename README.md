@@ -1,7 +1,7 @@
 # Social Network App
 
 A social network platform where users can share photos, comment on posts, and interact with other
-users. The app is built using React Native for the frontend and Express for the backend. Firebase is
+users. The app is built using React Native for the frontend and Firebase for the backend. Firebase is
 used for user authentication and data storage.
 
 ## Technologies Used
